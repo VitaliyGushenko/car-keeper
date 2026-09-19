@@ -9,4 +9,10 @@ export const environment = {
     appId: '1:913525844665:web:317d36452ffdfa8e588968',
     measurementId: 'G-2ZRHLF994R',
   },
+  // Supabase Storage (файлы): https://supabase.com → Settings → API.
+  supabase: {
+    url: '',
+    anonKey: '',
+    bucket: 'car-keeper',
+  },
 };

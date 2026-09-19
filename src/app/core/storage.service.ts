@@ -1,35 +1,48 @@
-import { Injectable, Injector, inject, runInInjectionContext } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Timestamp } from '@angular/fire/firestore';
-import { Storage, getDownloadURL, ref, uploadBytes, deleteObject } from '@angular/fire/storage';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
+import { environment } from '../../environments/environment';
 import { StoredFile } from './models';
 
+/**
+ * Хранилище файлов (фото, чеки, пользовательские GLB) на Supabase Storage.
+ * Бакет публичный: чтение — по public URL, пути содержат uid и id авто.
+ * Firebase Storage не используется (требует план Blaze).
+ */
 @Injectable({ providedIn: 'root' })
 export class StorageService {
-  private readonly storage = inject(Storage);
-  private readonly injector = inject(Injector);
+  private readonly client: SupabaseClient;
+  private readonly bucket = environment.supabase.bucket;
 
-  /** Загружает файл в Storage и возвращает ссылку для записи в Firestore. */
-  async uploadFile(path: string, file: Blob, contentType?: string): Promise<StoredFile> {
-    // Вызывается из обработчиков компонентов вне injection-контекста.
-    return runInInjectionContext(this.injector, async () => {
-      const fileRef = ref(this.storage, path);
-      await uploadBytes(fileRef, file, contentType ? { contentType } : undefined);
-      const url = await getDownloadURL(fileRef);
-      return { url, path, createdAt: Timestamp.now() };
-    });
+  constructor() {
+    const { url, anonKey } = environment.supabase;
+    if (!url || !anonKey) {
+      console.warn(
+        'storage: Supabase не настроен (src/environments/environment.ts) — загрузка файлов не будет работать',
+      );
+    }
+    this.client = createClient(url || 'http://localhost', anonKey || 'not-configured');
   }
 
-  /** Удаляет файл; отсутствие файла ошибкой не считается. */
+  /** Загружает файл в бакет и возвращает ссылку для записи в Firestore. */
+  async uploadFile(path: string, file: Blob, contentType?: string): Promise<StoredFile> {
+    const { error } = await this.client.storage.from(this.bucket).upload(path, file, {
+      contentType,
+      upsert: true,
+    });
+    if (error) {
+      throw error;
+    }
+    const { data } = this.client.storage.from(this.bucket).getPublicUrl(path);
+    return { url: data.publicUrl, path, createdAt: Timestamp.now() };
+  }
+
+  /** Удаляет файл; ошибка удаления (например, файл из старого хранилища) не роняет операцию. */
   async deleteFile(path: string): Promise<void> {
-    try {
-      await runInInjectionContext(this.injector, async () => {
-        await deleteObject(ref(this.storage, path));
-      });
-    } catch (error) {
-      if ((error as { code?: string }).code !== 'storage/object-not-found') {
-        throw error;
-      }
+    const { error } = await this.client.storage.from(this.bucket).remove([path]);
+    if (error) {
+      console.warn(`storage: не удалось удалить ${path}`, error.message);
     }
   }
 

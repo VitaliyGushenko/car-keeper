@@ -30,6 +30,6 @@ jobs:
       - name: Deploy Hosting + Rules
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only hosting,firestore:rules,storage --project car-keeper-a97bb --non-interactive
+          args: deploy --only hosting,firestore:rules --project car-keeper-a97bb --non-interactive
         env:
           GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}

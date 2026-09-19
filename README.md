@@ -2,7 +2,7 @@
 
 Учёт автомобилей: расходы, ремонты, регламенты обслуживания и 3D-модели.
 
-Angular 19 (standalone, signals) + Firebase (Auth, Firestore, Storage, Hosting, Analytics).
+Angular 19 (standalone, signals) + Firebase (Auth, Firestore, Hosting, Analytics) + Supabase Storage (файлы).
 
 ## Возможности
 
@@ -23,7 +23,7 @@ npm run build   # прод-сборка → dist/car-keeper/browser
 npm test        # unit-тесты (Karma)
 ```
 
-Конфиг Firebase уже лежит в `src/environments/environment.ts` (для прод-сборки — `environment.prod.ts`, подставляется через fileReplacements).
+Конфиг Firebase и Supabase лежит в `src/environments/environment.ts` (для прод-сборки — `environment.prod.ts`, подставляется через fileReplacements).
 
 ## Firebase-проект
 
@@ -33,18 +33,44 @@ npm test        # unit-тесты (Karma)
 
 1. **Authentication → Sign-in method** — включить провайдер **Email/Password**.
 2. **Firestore Database** — создать базу (production mode).
-3. **Storage** — создать бакет (production mode).
-4. **CORS для Storage** — обязательно для загрузок из браузера (фото, GLB). В Console UI нет — используйте Cloud Shell ([console.cloud.google.com](https://console.cloud.google.com), иконка терминала вверху):
 
-```bash
-gcloud storage buckets update gs://car-keeper-a97bb.firebasestorage.app \
-  --cors-file=cors.json   # cors.json лежит в корне репозитория
+Правила безопасности Firestore живут в репозитории: `firestore.rules` — деплоятся CI-ем вместе с хостингом (или вручную: `firebase deploy --only firestore:rules`).
+
+## Файлы: Supabase Storage
+
+Firebase Storage требует план Blaze с привязанной картой, поэтому файлы (фото авто, чеки, пользовательские GLB) хранятся в **Supabase Storage** (бесплатно, без карты):
+
+1. Зарегистрируйтесь на [supabase.com](https://supabase.com) и создайте проект (Free).
+2. **Storage → New bucket**: имя `car-keeper`, включите **Public bucket**.
+3. **Project Settings → API**: скопируйте **Project URL** и **anon public key**.
+4. Впишите их в `src/environments/environment.ts` и `environment.prod.ts` (поля `supabase.url` / `supabase.anonKey`).
+
+CORS у Supabase Storage открыт по умолчанию — ничего дополнительно настраивать не нужно.
+
+Пути в бакете (чтение публичное, приватность обеспечивается неугадываемыми путями):
+
+```
+cars/{uid}/{carId}/photos/**    — фото авто
+cars/{uid}/{carId}/receipts/**  — фото чеков
+cars/{uid}/{carId}/model/**     — пользовательские GLB
 ```
 
-Без этого любая загрузка файлов упрётся в ошибку «blocked by CORS policy».
+## Каталог 3D-моделей
 
+Каталог хранится прямо в репозитории (`public/models/`) и раздаётся Firebase Hosting — без карты и CORS (same-origin):
 
-Правила безопасности живут в репозитории: `firestore.rules` и `storage.rules` — деплоятся CI-ем вместе с хостингом (или вручную: `firebase deploy --only firestore:rules,storage`).
+1. Положите файл в `public/models/` (например, `public/models/lada_vesta.glb`). Оптимизируйте вес (~5–10 МБ): `npx @gltf-transform/cli optimize model.glb public/models/lada_vesta.glb`.
+2. Закоммитьте и задеплойте — файл доступен по пути `/models/lada_vesta.glb` (в dev — на localhost:4200, в проде — на домене Hosting).
+3. В Firestore создайте документ в коллекции `vehicleModels` с id `lada_vesta` (нормализованные марка_модель, см. `core/normalize.ts`):
+
+| поле | значение |
+|---|---|
+| `make` | `Lada` |
+| `model` | `Vesta` |
+| `modelUrl` | `/models/lada_vesta.glb` |
+| `previewUrl` | (необязательно) ссылка на превью |
+
+Пользователь добавит авто «Lada Vesta» — модель подставится сама.
 
 ## Структура данных (Firestore)
 
@@ -59,35 +85,9 @@ vehicleModels/{make_model}              — каталог 3D-моделей (pu
 maintenanceTemplates/{id}               — шаблоны регламентов (public read)
 ```
 
-Storage:
-
-```
-cars/{uid}/{carId}/photos/**            — фото авто
-cars/{uid}/{carId}/receipts/**          — фото чеков
-cars/{uid}/{carId}/model/**             — пользовательские GLB
-models/**                               — GLB каталога (public read)
-```
-
-## Каталог 3D-моделей
-
-Чтобы 3D-модель подставилась автоматически:
-
-1. Загрузите файл GLB в Storage в папку `models/` (например `models/lada_vesta.glb`).
-2. Скопируйте его **download URL**.
-3. В Firestore создайте документ в коллекции `vehicleModels` с id `lada_vesta` (нормализованные марка_модель, латиница/кириллица в нижнем регистре):
-
-| поле | значение |
-|---|---|
-| `make` | `Lada` |
-| `model` | `Vesta` |
-| `modelUrl` | `https://firebasestorage…` |
-| `previewUrl` | (необязательно) ссылка на превью |
-
-Пользователь добавит авто «Lada Vesta» — модель подставится сама (см. `core/normalize.ts`).
-
 ## Деплой (GitHub Actions → Firebase Hosting)
 
-Пуш в `main` автоматически собирает прод-версию и деплоит hosting + правила (`.github/workflows/deploy.yml`).
+Пуш в `main` автоматически собирает прод-версию и деплоит hosting + правила Firestore (`.github/workflows/deploy.yml`).
 
 Одна настройка — секрет `FIREBASE_SERVICE_ACCOUNT` в GitHub (Settings → Secrets and variables → Actions):
 
