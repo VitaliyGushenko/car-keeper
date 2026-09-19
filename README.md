@@ -34,6 +34,15 @@ npm test        # unit-тесты (Karma)
 1. **Authentication → Sign-in method** — включить провайдер **Email/Password**.
 2. **Firestore Database** — создать базу (production mode).
 3. **Storage** — создать бакет (production mode).
+4. **CORS для Storage** — обязательно для загрузок из браузера (фото, GLB). В Console UI нет — используйте Cloud Shell ([console.cloud.google.com](https://console.cloud.google.com), иконка терминала вверху):
+
+```bash
+gcloud storage buckets update gs://car-keeper-a97bb.firebasestorage.app \
+  --cors-file=cors.json   # cors.json лежит в корне репозитория
+```
+
+Без этого любая загрузка файлов упрётся в ошибку «blocked by CORS policy».
+
 
 Правила безопасности живут в репозитории: `firestore.rules` и `storage.rules` — деплоятся CI-ем вместе с хостингом (или вручную: `firebase deploy --only firestore:rules,storage`).
 

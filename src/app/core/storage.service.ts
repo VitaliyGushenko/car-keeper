@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Injector, inject, runInInjectionContext } from '@angular/core';
 import { Timestamp } from '@angular/fire/firestore';
 import { Storage, getDownloadURL, ref, uploadBytes, deleteObject } from '@angular/fire/storage';
 
@@ -7,19 +7,25 @@ import { StoredFile } from './models';
 @Injectable({ providedIn: 'root' })
 export class StorageService {
   private readonly storage = inject(Storage);
+  private readonly injector = inject(Injector);
 
   /** Загружает файл в Storage и возвращает ссылку для записи в Firestore. */
   async uploadFile(path: string, file: Blob, contentType?: string): Promise<StoredFile> {
-    const fileRef = ref(this.storage, path);
-    await uploadBytes(fileRef, file, contentType ? { contentType } : undefined);
-    const url = await getDownloadURL(fileRef);
-    return { url, path, createdAt: Timestamp.now() };
+    // Вызывается из обработчиков компонентов вне injection-контекста.
+    return runInInjectionContext(this.injector, async () => {
+      const fileRef = ref(this.storage, path);
+      await uploadBytes(fileRef, file, contentType ? { contentType } : undefined);
+      const url = await getDownloadURL(fileRef);
+      return { url, path, createdAt: Timestamp.now() };
+    });
   }
 
   /** Удаляет файл; отсутствие файла ошибкой не считается. */
   async deleteFile(path: string): Promise<void> {
     try {
-      await deleteObject(ref(this.storage, path));
+      await runInInjectionContext(this.injector, async () => {
+        await deleteObject(ref(this.storage, path));
+      });
     } catch (error) {
       if ((error as { code?: string }).code !== 'storage/object-not-found') {
         throw error;
