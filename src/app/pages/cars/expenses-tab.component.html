@@ -1,0 +1,177 @@
+<!-- Сводки -->
+<div class="stats">
+  <ck-stat-tile label="За всё время" [value]="formatMoney(summary().total, defaultCurrency)" />
+  <ck-stat-tile label="В этом месяце" [value]="formatMoney(summary().thisMonth, defaultCurrency)" />
+  <ck-stat-tile label="В прошлом месяце" [value]="formatMoney(summary().prevMonth, defaultCurrency)" />
+</div>
+
+<div class="charts">
+  <div class="card">
+    <h3>По категориям</h3>
+    @if (summary().byType.length === 0) {
+      <p class="muted">Данных пока нет.</p>
+    } @else {
+      @for (cat of summary().byType; track cat.type) {
+        <div class="cat-row">
+          <ck-badge [tone]="typeTones[cat.type]">{{ typeLabels[cat.type] }}</ck-badge>
+          <div class="cat-bar">
+            <div class="cat-bar-fill" [style.width.%]="cat.percent * 100"></div>
+          </div>
+          <div class="cat-value">{{ formatMoney(cat.total, defaultCurrency) }}</div>
+        </div>
+      }
+    }
+  </div>
+
+  <div class="card">
+    <h3>По месяцам</h3>
+    <div class="months">
+      @for (month of summary().monthly; track month.key) {
+        <div class="month-col" [title]="month.total.toLocaleString('ru-RU')">
+          <div class="month-value">{{ month.total > 0 ? roundTotal(month.total) : '' }}</div>
+          <div class="month-bar-wrap">
+            <div class="month-bar" [style.height.%]="monthlyHeight(month.total)"></div>
+          </div>
+          <div class="month-label">{{ month.label }}</div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Список расходов -->
+@if (sorted().length === 0) {
+  <div class="card">
+    <ck-empty-state
+      title="Расходов пока нет"
+      description="Добавляйте топливо, ремонт, страховку — приложение посчитает всё само. Подтверждённые ремонты попадают сюда автоматически."
+      icon="💰">
+      <button type="button" ckButton="primary" action (click)="openAdd()">Добавить расход</button>
+    </ck-empty-state>
+  </div>
+} @else {
+  <div class="card">
+    <div class="exp-head">
+      <h3 class="grow">История расходов</h3>
+      <button type="button" ckButton="primary" ckSmall (click)="openAdd()">+ Расход</button>
+    </div>
+    <div class="exp-list">
+      @for (expense of sorted(); track expense.id) {
+        <div class="exp-row">
+          <ck-badge [tone]="typeTones[expense.type]">{{ typeLabels[expense.type] }}</ck-badge>
+          <div class="grow exp-main">
+            <div class="exp-title">
+              {{ expense.title || typeLabels[expense.type] }}
+              @if (expense.linkedRepairId) {
+                <span class="faint" title="Создан из подтверждённого ремонта">🛠</span>
+              }
+            </div>
+            <div class="faint">
+              {{ formatDate(expense.date) }}
+              @if (expense.mileageAt !== null && expense.mileageAt !== undefined) {
+                · {{ formatNumber(expense.mileageAt) }} км
+              }
+              @if (expense.receipt) {
+                · <button type="button" class="link-btn" (click)="receiptView.set(expense.receipt!)">чек</button>
+              }
+            </div>
+          </div>
+          <div class="exp-amount">{{ formatMoney(expense.amount, expense.currency) }}</div>
+          <div class="exp-actions">
+            <button type="button" ckButton="ghost" ckSmall (click)="openEdit(expense)">Изменить</button>
+            <button type="button" ckButton="ghost" ckSmall (click)="removeConfirm.set(expense)">Удалить</button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<!-- Диалог добавления/редактирования -->
+<ck-dialog [open]="dialogOpen()" [title]="editingId() ? 'Изменить расход' : 'Новый расход'"
+           (closed)="dialogOpen.set(false)">
+  <form (ngSubmit)="save()">
+    <div class="grid-2">
+      <label class="field">
+        <span class="field-label">Категория</span>
+        <select class="select" name="expType" [(ngModel)]="expType">
+          @for (key of typeKeys; track key) {
+            <option [value]="key">{{ typeLabels[key] }}</option>
+          }
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Валюта</span>
+        <select class="select" name="expCurrency" [(ngModel)]="expCurrency">
+          @for (code of currencies; track code) {
+            <option [value]="code">{{ code }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <label class="field">
+      <span class="field-label">Название</span>
+      <input class="input" name="expTitle" [(ngModel)]="expTitle"
+             placeholder="Например, АИ-95, 40 л" />
+    </label>
+
+    <div class="grid-2">
+      <label class="field">
+        <span class="field-label">Сумма *</span>
+        <input class="input" type="number" name="expAmount" [(ngModel)]="expAmount"
+               min="0" step="0.01" required />
+      </label>
+      <label class="field">
+        <span class="field-label">Дата</span>
+        <input class="input" type="date" name="expDate" [(ngModel)]="expDate" />
+      </label>
+    </div>
+
+    <label class="field">
+      <span class="field-label">Пробег на момент расхода, км</span>
+      <input class="input" type="number" name="expMileage" [(ngModel)]="expMileage" min="0" step="1" />
+    </label>
+
+    <label class="field">
+      <span class="field-label">Заметки</span>
+      <textarea class="textarea" name="expNotes" [(ngModel)]="expNotes"
+                placeholder="Детали, место покупки…"></textarea>
+    </label>
+
+    <div class="field">
+      <span class="field-label">Фото чека</span>
+      <label class="btn btn-ghost receipt-upload">
+        <input type="file" accept="image/*" hidden (change)="onReceiptSelected($event)" />
+        📷 Выбрать фото
+      </label>
+      @if (receiptPreview()) {
+        <div class="receipt-preview">
+          <img [src]="receiptPreview()!.url" alt="Чек" (click)="receiptView.set(receiptPreview())" />
+          <button type="button" class="btn btn-danger btn-sm" (click)="removeReceiptFile()">Убрать</button>
+        </div>
+      }
+    </div>
+
+    <div class="dialog-actions">
+      <button type="button" ckButton (click)="dialogOpen.set(false)">Отмена</button>
+      <button type="submit" ckButton="primary" [disabled]="busy()">Сохранить</button>
+    </div>
+  </form>
+</ck-dialog>
+
+<!-- Полный просмотр чека -->
+<ck-dialog [open]="receiptView() !== null" (closed)="receiptView.set(null)">
+  @if (receiptView(); as receipt) {
+    <img class="receipt-full" [src]="receipt.url" alt="Чек" />
+  }
+</ck-dialog>
+
+<ck-confirm
+  [open]="removeConfirm() !== null"
+  title="Удалить расход?"
+  [message]="(removeConfirm()?.title ?? 'Расход') + ' — ' + formatMoney(removeConfirm()?.amount ?? 0, removeConfirm()?.currency ?? 'RUB')"
+  confirmText="Удалить"
+  [danger]="true"
+  (confirmed)="removeConfirmed()"
+  (cancelled)="removeConfirm.set(null)" />
