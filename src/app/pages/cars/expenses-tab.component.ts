@@ -120,6 +120,19 @@ export class ExpensesTabComponent implements OnInit {
     });
   });
 
+  readonly hasActiveFilters = computed(
+    () =>
+      this.searchTerm().trim() !== '' ||
+      this.typeFilter() !== 'all' ||
+      this.monthFilter() !== 'all',
+  );
+
+  resetFilters(): void {
+    this.searchTerm.set('');
+    this.typeFilter.set('all');
+    this.monthFilter.set('all');
+  }
+
   exportCsv(): void {
     const make = this.car().make;
     const model = this.car().model;

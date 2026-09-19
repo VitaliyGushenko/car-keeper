@@ -40,38 +40,48 @@
 </div>
 
 <!-- Список расходов -->
-@if (filtered().length === 0) {
-  <div class="card">
-    <ck-empty-state
-      title="Расходов пока нет"
-      description="Добавляйте топливо, ремонт, страховку — приложение посчитает всё само. Подтверждённые ремонты попадают сюда автоматически."
-      icon="💰">
-      <button type="button" ckButton="primary" action (click)="openAdd()">Добавить расход</button>
-    </ck-empty-state>
+<div class="card">
+  <div class="exp-head">
+    <h3 class="grow">История расходов</h3>
+    <button type="button" ckButton="ghost" ckSmall (click)="exportCsv()">⬇ CSV</button>
+    <button type="button" ckButton="primary" ckSmall (click)="openAdd()">+ Расход</button>
   </div>
-} @else {
-  <div class="card">
-    <div class="exp-head">
-      <h3 class="grow">История расходов</h3>
-      <button type="button" ckButton="ghost" ckSmall (click)="exportCsv()">⬇ CSV</button>
-      <button type="button" ckButton="primary" ckSmall (click)="openAdd()">+ Расход</button>
-    </div>
-    <div class="filters no-print">
-      <input class="input" placeholder="Поиск по названию и заметкам"
-             [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" name="expSearch" />
-      <select class="select" [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)" name="expTypeFilter">
-        <option value="all">Все категории</option>
-        @for (key of typeKeys; track key) {
-          <option [value]="key">{{ typeLabels[key] }}</option>
+  <div class="filters no-print">
+    <input class="input" placeholder="Поиск по названию и заметкам"
+           [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" name="expSearch" />
+    <select class="select" [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)" name="expTypeFilter">
+      <option value="all">Все категории</option>
+      @for (key of typeKeys; track key) {
+        <option [value]="key">{{ typeLabels[key] }}</option>
+      }
+    </select>
+    <select class="select" [ngModel]="monthFilter()" (ngModelChange)="monthFilter.set($event)" name="expMonthFilter">
+      <option value="all">Все месяцы</option>
+      @for (month of months(); track month) {
+        <option [value]="month">{{ month }}</option>
+      }
+    </select>
+  </div>
+
+  @if (filtered().length === 0) {
+    @if (sorted().length === 0) {
+      <ck-empty-state
+        title="Расходов пока нет"
+        description="Добавляйте топливо, ремонт, страховку — приложение посчитает всё само. Подтверждённые ремонты попадают сюда автоматически."
+        icon="💰">
+        <button type="button" ckButton="primary" action (click)="openAdd()">Добавить расход</button>
+      </ck-empty-state>
+    } @else {
+      <ck-empty-state
+        title="Ничего не найдено"
+        description="По заданным фильтрам расходов нет."
+        icon="🔍">
+        @if (hasActiveFilters()) {
+          <button type="button" ckButton action (click)="resetFilters()">Сбросить фильтры</button>
         }
-      </select>
-      <select class="select" [ngModel]="monthFilter()" (ngModelChange)="monthFilter.set($event)" name="expMonthFilter">
-        <option value="all">Все месяцы</option>
-        @for (month of months(); track month) {
-          <option [value]="month">{{ month }}</option>
-        }
-      </select>
-    </div>
+      </ck-empty-state>
+    }
+  } @else {
     <div class="exp-list">
       @for (expense of filtered(); track expense.id) {
         <div class="exp-row">
@@ -101,8 +111,8 @@
         </div>
       }
     </div>
+    }
   </div>
-}
 
 <!-- Диалог добавления/редактирования -->
 <ck-dialog [open]="dialogOpen()" [title]="editingId() ? 'Изменить расход' : 'Новый расход'"
