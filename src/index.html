@@ -1,11 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="utf-8">
   <title>CarKeeper</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script>
+    // Тема применяется до загрузки приложения, чтобы не было «вспышки».
+    try {
+      document.documentElement.dataset.theme = localStorage.getItem('ck-theme') || 'dark';
+    } catch (_) {
+      document.documentElement.dataset.theme = 'dark';
+    }
+  </script>
 </head>
 <body>
   <app-root></app-root>
