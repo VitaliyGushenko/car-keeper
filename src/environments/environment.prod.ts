@@ -11,8 +11,8 @@ export const environment = {
   },
   // Supabase Storage (файлы): https://supabase.com → Settings → API.
   supabase: {
-    url: '',
-    anonKey: '',
+    url: 'https://ipzqxdtrjormmpgpjjax.supabase.co',
+    anonKey: 'sb_publishable_8xmYhthHGIu0Glvs0N3YWw_Dym9tAuc',
     bucket: 'car-keeper',
   },
 };
