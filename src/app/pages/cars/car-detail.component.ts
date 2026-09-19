@@ -16,6 +16,12 @@ import { FaultsService } from '../../core/faults.service';
 import { SchedulesTabComponent } from './schedules-tab.component';
 import { FaultsTabComponent } from './faults-tab.component';
 import { ExpensesTabComponent } from './expenses-tab.component';
+import { FuelTabComponent } from './fuel-tab.component';
+import { DocumentsTabComponent } from './documents-tab.component';
+import { FuelService } from '../../core/fuel.service';
+import { DocumentsService } from '../../core/documents.service';
+import { FuelEntry, VehicleDocument } from '../../core/models';
+import { expiringOrExpired } from '../../core/doc-status';
 import { UiBadge } from '../../ui/badge.component';
 import { UiButton } from '../../ui/button.directive';
 import { UiConfirm } from '../../ui/confirm.component';
@@ -38,6 +44,8 @@ import { UiTabs, UiTab } from '../../ui/tabs.component';
     SchedulesTabComponent,
     FaultsTabComponent,
     ExpensesTabComponent,
+    FuelTabComponent,
+    DocumentsTabComponent,
   ],
   templateUrl: './car-detail.component.html',
   styleUrl: './car-detail.component.less',
@@ -56,6 +64,8 @@ export class CarDetailComponent {
 
   private readonly schedulesService = inject(SchedulesService);
   private readonly faultsService = inject(FaultsService);
+  private readonly fuelService = inject(FuelService);
+  private readonly documentsService = inject(DocumentsService);
   /** Регламенты и неисправности нужны здесь для счётчиков на вкладках. */
   private readonly schedules = toSignal(
     defer(() => this.schedulesService.watch(this.carId())),
@@ -64,6 +74,15 @@ export class CarDetailComponent {
   private readonly openFaultsCount = toSignal(
     defer(() => this.faultsService.watch(this.carId())),
     { initialValue: [] as Fault[] },
+  );
+
+  private readonly fuelEntries = toSignal(
+    defer(() => this.fuelService.watch(this.carId())),
+    { initialValue: [] as FuelEntry[] },
+  );
+  private readonly documents = toSignal(
+    defer(() => this.documentsService.watch(this.carId())),
+    { initialValue: [] as VehicleDocument[] },
   );
 
   readonly activeTab = signal('overview');

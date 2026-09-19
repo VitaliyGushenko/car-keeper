@@ -1,0 +1,131 @@
+<!-- Плитки -->
+<div class="stats">
+  <ck-stat-tile
+    label="Средний расход"
+    [value]="stats().avgConsumption !== null ? stats().avgConsumption!.toFixed(1) + ' л/100км' : '—'"
+    hint="по полным бакам" />
+  <ck-stat-tile
+    label="Стоимость километра"
+    [value]="stats().costPerKm !== null ? formatMoney(stats().costPerKm!, currency()) : '—'" />
+  <ck-stat-tile label="Заправок" [value]="stats().fillups" />
+  <ck-stat-tile label="Потрачено на топливо" [value]="formatMoney(stats().totalCost, currency())" />
+</div>
+
+<!-- Расход по заправкам -->
+@if (stats().consumptions.length > 0) {
+  <div class="card">
+    <h3>Расход по заправкам</h3>
+    @for (c of stats().consumptions.slice(-6); track c.id) {
+      <div class="cons-row">
+        <span class="cons-date">{{ formatDate(c.date) }}</span>
+        <div class="cons-bar">
+          <div class="cons-bar-fill" [style.width.%]="(c.consumption / maxConsumption()) * 100"></div>
+        </div>
+        <span class="cons-value">{{ c.consumption.toFixed(1) }} л</span>
+      </div>
+    }
+  </div>
+}
+
+<!-- Список заправок -->
+@if (sorted().length === 0) {
+  <div class="card">
+    <ck-empty-state
+      title="Заправок пока нет"
+      description="Записывайте заправки «до полного» — приложение посчитает реальный расход топлива и стоимость километра."
+      icon="⛽">
+      <button type="button" ckButton="primary" action (click)="openAdd()">Добавить заправку</button>
+    </ck-empty-state>
+  </div>
+} @else {
+  <div class="card">
+    <div class="list-head">
+      <h3 class="grow">История заправок</h3>
+      <button type="button" ckButton="primary" ckSmall (click)="openAdd()">+ Заправка</button>
+    </div>
+    <div class="fuel-list">
+      @for (entry of sorted(); track entry.id) {
+        <div class="fuel-row">
+          <ck-badge tone="info" [title]="entry.fullTank ? 'До полного' : 'Частичная'">
+            {{ entry.fullTank ? 'Полный' : 'Частично' }}
+          </ck-badge>
+          <div class="grow fuel-main">
+            <div class="fuel-title">
+              {{ entry.liters }} л
+              @if (entry.pricePerLiter) {
+                <span class="faint">× {{ formatMoney(entry.pricePerLiter, currency()) }}/л</span>
+              }
+            </div>
+            <div class="faint">
+              {{ formatDate(entry.date) }} · {{ formatNumber(entry.odometerKm) }} км
+              @if (entry.gasStation) {
+                · {{ entry.gasStation }}
+              }
+            </div>
+          </div>
+          <div class="fuel-total">{{ formatMoney(entry.totalCost, currency()) }}</div>
+          <div class="fuel-actions">
+            <button type="button" ckButton="ghost" ckSmall (click)="openEdit(entry)">Изменить</button>
+            <button type="button" ckButton="ghost" ckSmall (click)="removeConfirm.set(entry)">Удалить</button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<ck-dialog [open]="dialogOpen()" [title]="editingId() ? 'Изменить заправку' : 'Новая заправка'"
+           (closed)="dialogOpen.set(false)">
+  <form (ngSubmit)="save()">
+    <div class="grid-2">
+      <label class="field">
+        <span class="field-label">Одометр, км *</span>
+        <input class="input" type="number" name="fuelOdometer" [(ngModel)]="fuelOdometer"
+               min="0" step="1" required />
+      </label>
+      <label class="field">
+        <span class="field-label">Дата</span>
+        <input class="input" type="date" name="fuelDate" [(ngModel)]="fuelDate" />
+      </label>
+    </div>
+    <div class="grid-2">
+      <label class="field">
+        <span class="field-label">Литры *</span>
+        <input class="input" type="number" name="fuelLiters" [(ngModel)]="fuelLiters"
+               min="0" step="0.01" required (input)="onAmountInput()" />
+      </label>
+      <label class="field">
+        <span class="field-label">Цена за литр</span>
+        <input class="input" type="number" name="fuelPrice" [(ngModel)]="fuelPrice"
+               min="0" step="0.01" (input)="onAmountInput()" />
+      </label>
+    </div>
+    <div class="grid-2">
+      <label class="field">
+        <span class="field-label">Сумма, {{ currency() }}</span>
+        <input class="input" type="number" name="fuelTotal" [(ngModel)]="fuelTotal" min="0" step="0.01" />
+      </label>
+      <label class="field">
+        <span class="field-label">Заправка / АЗС</span>
+        <input class="input" name="fuelStation" [(ngModel)]="fuelStation" placeholder="Газпромнефть" />
+      </label>
+    </div>
+    <label class="check-row">
+      <input type="checkbox" name="fuelFullTank" [(ngModel)]="fuelFullTank" />
+      <span>Бак залит до полного — включить в расчёт расхода</span>
+    </label>
+    <div class="dialog-actions">
+      <button type="button" ckButton (click)="dialogOpen.set(false)">Отмена</button>
+      <button type="submit" ckButton="primary" [disabled]="busy()">Сохранить</button>
+    </div>
+  </form>
+</ck-dialog>
+
+<ck-confirm
+  [open]="removeConfirm() !== null"
+  title="Удалить заправку?"
+  [message]="'Связанный расход ' + formatMoney(removeConfirm()?.totalCost ?? 0, currency()) + ' будет удалён тоже.'"
+  confirmText="Удалить"
+  [danger]="true"
+  (confirmed)="removeConfirmed()"
+  (cancelled)="removeConfirm.set(null)" />

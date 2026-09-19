@@ -104,6 +104,14 @@
         <ck-faults-tab [car]="c" />
       }
 
+      @case ('fuel') {
+        <ck-fuel-tab [car]="c" />
+      }
+
+      @case ('documents') {
+        <ck-documents-tab [car]="c" />
+      }
+
       @case ('expenses') {
         <ck-expenses-tab [car]="c" />
       }

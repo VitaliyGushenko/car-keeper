@@ -33,7 +33,7 @@ interface FaultRow {
 
 @Component({
   selector: 'ck-dashboard',
-  imports: [RouterLink, UiBadge, UiButton, UiEmptyState, UiSpinner, UiStatTile],
+  imports: [RouterLink, UiBadge, UiButton, UiEmptyState, UiStatTile],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.less',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

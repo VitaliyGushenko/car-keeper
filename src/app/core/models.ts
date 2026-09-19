@@ -134,10 +134,55 @@ export interface Expense {
   receipt?: StoredFile | null;
   linkedRepairId?: string | null;
   linkedScheduleId?: string | null;
+  linkedFuelId?: string | null;
+  linkedDocumentId?: string | null;
   createdAt?: Timestamp | null;
 }
 
 export type ExpenseDraft = Omit<Expense, 'id' | 'createdAt'>;
+
+/** Заправка: cars/{carId}/fuel/{id}. */
+export interface FuelEntry {
+  id: string;
+  date: Timestamp | null;
+  /** Одометр на момент заправки, км. */
+  odometerKm: number;
+  liters: number;
+  pricePerLiter: number | null;
+  totalCost: number;
+  fullTank: boolean;
+  gasStation?: string;
+  /** Расход, созданный вместе с заправкой. */
+  linkedExpenseId?: string | null;
+  createdAt?: Timestamp | null;
+}
+
+export type FuelDraft = Omit<FuelEntry, 'id' | 'linkedExpenseId' | 'createdAt'>;
+
+/** Документ авто (ОСАГО, КАСКО, техосмотр): cars/{carId}/documents/{id}. */
+export interface VehicleDocument {
+  id: string;
+  title: string;
+  number?: string;
+  startDate?: Timestamp | null;
+  endDate?: Timestamp | null;
+  cost?: number | null;
+  notes?: string;
+  photo?: StoredFile | null;
+  createdAt?: Timestamp | null;
+}
+
+export type DocumentDraft = Omit<VehicleDocument, 'id' | 'createdAt'>;
+
+/** Запись журнала пробегов: cars/{carId}/mileage/{id}. */
+export interface MileageEntry {
+  id: string;
+  odometerKm: number;
+  date: Timestamp | null;
+  photo?: StoredFile | null;
+  source?: 'manual' | 'fuel';
+  createdAt?: Timestamp | null;
+}
 
 /** Запись каталога 3D-моделей: vehicleModels/{make_model}. Чтение — всем, запись — вручную. */
 export interface VehicleModel {

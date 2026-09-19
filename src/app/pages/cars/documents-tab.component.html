@@ -1,0 +1,121 @@
+@if (documents().length === 0) {
+  <div class="card">
+    <ck-empty-state
+      title="Документов пока нет"
+      description="Добавьте ОСАГО, КАСКО или техосмотр — приложение напомнит об окончании срока действия."
+      icon="🧾">
+      <button type="button" ckButton="primary" action (click)="openAdd()">Добавить документ</button>
+    </ck-empty-state>
+  </div>
+} @else {
+  <div class="list">
+    @for (document of documents(); track document.id) {
+      <div class="card doc-card">
+        <div class="row">
+          <div class="grow">
+            <div class="doc-title">{{ document.title }}</div>
+            <div class="faint">
+              @if (document.number) { №{{ document.number }}, }
+              {{ formatDate(document.startDate) }} — {{ formatDate(document.endDate) }}
+            </div>
+          </div>
+          <ck-badge [tone]="statusTones[documentStatus(document)]">{{ statusLabels[documentStatus(document)] }}</ck-badge>
+        </div>
+        @if (daysLeftText(document); as left) {
+          <div class="doc-left" [class.danger]="documentStatus(document) === 'expired'">
+            {{ left }}
+          </div>
+        }
+        @if (document.cost) {
+          <div class="muted">Стоимость: {{ formatMoney(document.cost, currency()) }}</div>
+        }
+        @if (document.notes) {
+          <div class="muted doc-notes">{{ document.notes }}</div>
+        }
+        @if (document.photo) {
+          <img class="doc-photo" [src]="document.photo.url" alt="Фото документа"
+               (click)="photoView.set(document.photo!)" />
+        }
+        <div class="doc-actions">
+          <button type="button" ckButton="ghost" ckSmall (click)="openEdit(document)">Изменить</button>
+          <button type="button" ckButton="ghost" ckSmall (click)="removeConfirm.set(document)">Удалить</button>
+        </div>
+      </div>
+    }
+  </div>
+  <div class="list-footer">
+    <button type="button" ckButton (click)="openAdd()">+ Добавить документ</button>
+  </div>
+}
+
+<ck-dialog [open]="dialogOpen()" [title]="editingId() ? 'Изменить документ' : 'Новый документ'"
+           (closed)="dialogOpen.set(false)">
+  <form (ngSubmit)="save()">
+    <label class="field">
+      <span class="field-label">Название *</span>
+      <input class="input" name="docTitle" [(ngModel)]="docTitle" required
+             placeholder="ОСАГО, КАСКО, техосмотр…" />
+    </label>
+    <label class="field">
+      <span class="field-label">Номер</span>
+      <input class="input" name="docNumber" [(ngModel)]="docNumber" placeholder="ХХХ 0123456789" />
+    </label>
+    <div class="grid-2">
+      <label class="field">
+        <span class="field-label">Действует с</span>
+        <input class="input" type="date" name="docStart" [(ngModel)]="docStart" />
+      </label>
+      <label class="field">
+        <span class="field-label">Действует до *</span>
+        <input class="input" type="date" name="docEnd" [(ngModel)]="docEnd" required />
+      </label>
+    </div>
+    <label class="field">
+      <span class="field-label">Стоимость, {{ currency() }}</span>
+      <input class="input" type="number" name="docCost" [(ngModel)]="docCost" min="0" step="100" />
+    </label>
+    @if (editingId() === null && (docCost ?? 0) > 0) {
+      <label class="check-row">
+        <input type="checkbox" name="docCreateExpense" [(ngModel)]="docCreateExpense" />
+        <span>Добавить расход «Страховка» на эту сумму</span>
+      </label>
+    }
+    <label class="field">
+      <span class="field-label">Заметки</span>
+      <textarea class="textarea" name="docNotes" [(ngModel)]="docNotes"
+                placeholder="Страховая компания, телефон агента…"></textarea>
+    </label>
+    <div class="field">
+      <span class="field-label">Фото документа</span>
+      <label class="btn btn-ghost photo-upload">
+        <input type="file" accept="image/*" hidden (change)="onPhotoSelected($event)" />
+        📷 Выбрать фото
+      </label>
+      @if (docPhoto()) {
+        <div class="photo-preview">
+          <img [src]="docPhoto()!.url" alt="Документ" (click)="photoView.set(docPhoto())" />
+          <button type="button" class="btn btn-danger btn-sm" (click)="removePhotoFile()">Убрать</button>
+        </div>
+      }
+    </div>
+    <div class="dialog-actions">
+      <button type="button" ckButton (click)="dialogOpen.set(false)">Отмена</button>
+      <button type="submit" ckButton="primary" [disabled]="busy()">Сохранить</button>
+    </div>
+  </form>
+</ck-dialog>
+
+<ck-dialog [open]="photoView() !== null" (closed)="photoView.set(null)">
+  @if (photoView(); as photo) {
+    <img class="photo-full" [src]="photo.url" alt="Документ" />
+  }
+</ck-dialog>
+
+<ck-confirm
+  [open]="removeConfirm() !== null"
+  title="Удалить документ?"
+  [message]="'«' + (removeConfirm()?.title ?? '') + '» будет удалён. Связанный расход останется.'"
+  confirmText="Удалить"
+  [danger]="true"
+  (confirmed)="removeConfirmed()"
+  (cancelled)="removeConfirm.set(null)" />
