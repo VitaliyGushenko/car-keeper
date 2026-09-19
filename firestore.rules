@@ -48,6 +48,18 @@ service cloud.firestore {
       match /expenses/{docId} {
         allow read, write: if isOwner(carOwner(carId));
       }
+
+      match /fuel/{docId} {
+        allow read, write: if isOwner(carOwner(carId));
+      }
+
+      match /documents/{docId} {
+        allow read, write: if isOwner(carOwner(carId));
+      }
+
+      match /mileage/{docId} {
+        allow read, write: if isOwner(carOwner(carId));
+      }
     }
 
     // Каталог 3D-моделей: public read, запись только из Console.
