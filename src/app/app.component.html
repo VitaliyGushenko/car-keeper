@@ -26,7 +26,7 @@
         {{ theme.isDark() ? '☀️' : '🌙' }}
       </button>
 
-      <span class="app-user faint" [title]="auth.user()?.email ?? ''">{{ auth.user()?.email }}</span>
+      <a routerLink="/profile" class="app-user faint" title="Профиль">{{ auth.user()?.email }}</a>
 
       <button type="button" ckButton="ghost" ckSmall (click)="logout()">Выйти</button>
     </header>

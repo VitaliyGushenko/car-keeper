@@ -23,8 +23,6 @@ const TYPE_TONES: Record<ExpenseType, UiBadgeTone> = {
   other: 'muted',
 };
 
-const CURRENCIES = ['RUB', 'USD', 'EUR', 'KZT', 'UAH', 'BYN'] as const;
-
 @Component({
   selector: 'ck-expenses-tab',
   imports: [
@@ -53,12 +51,12 @@ export class ExpensesTabComponent implements OnInit {
   readonly typeLabels = EXPENSE_TYPE_LABELS;
   readonly typeTones = TYPE_TONES;
   readonly typeKeys = Object.keys(EXPENSE_TYPE_LABELS) as ExpenseType[];
-  readonly currencies = CURRENCIES;
   readonly formatMoney = formatMoney;
   readonly formatDate = formatDate;
   readonly formatNumber = formatNumber;
 
-  readonly defaultCurrency = this.auth.profile()?.settings?.currency ?? 'RUB';
+  /** Валюта из профиля — реактивно, меняется сразу после сохранения в «Профиле». */
+  readonly defaultCurrency = computed(() => this.auth.profile()?.settings?.currency ?? 'RUB');
 
   readonly summary = computed(() => summarizeExpenses(this.expenses()));
 
@@ -77,7 +75,6 @@ export class ExpensesTabComponent implements OnInit {
   expType: ExpenseType = 'fuel';
   expTitle = '';
   expAmount: number | null = null;
-  expCurrency = 'RUB';
   expDate = '';
   expMileage: number | null = null;
   expNotes = '';
@@ -100,7 +97,6 @@ export class ExpensesTabComponent implements OnInit {
     this.expType = 'fuel';
     this.expTitle = '';
     this.expAmount = null;
-    this.expCurrency = this.defaultCurrency;
     this.expDate = toDateInputValue(new Date());
     this.expMileage = this.car().mileageKm;
     this.expNotes = '';
@@ -115,7 +111,6 @@ export class ExpensesTabComponent implements OnInit {
     this.expType = expense.type;
     this.expTitle = expense.title ?? '';
     this.expAmount = expense.amount;
-    this.expCurrency = expense.currency;
     this.expDate = toDateInputValue(expense.date);
     this.expMileage = expense.mileageAt ?? null;
     this.expNotes = expense.notes ?? '';
@@ -146,7 +141,7 @@ export class ExpensesTabComponent implements OnInit {
         type: this.expType,
         title: this.expTitle.trim() || undefined,
         amount: this.expAmount,
-        currency: this.expCurrency,
+        currency: this.defaultCurrency(),
         date: dateInputToTimestamp(this.expDate),
         mileageAt: this.expMileage,
         notes: this.expNotes.trim() || undefined,

@@ -8,7 +8,7 @@
 } @else {
   @for (fault of openFaults(); track fault.id) {
     <ck-fault-card
-      [fault]="fault" [repairs]="repairsOf(fault.id)" [currency]="currency"
+      [fault]="fault" [repairs]="repairsOf(fault.id)" [currency]="currency()"
       [severityLabels]="severityLabels" [severityTones]="severityTones"
       (repairAdd)="openAddRepair(fault.id)"
       (repairEdit)="openEditRepair($event)"
@@ -23,7 +23,7 @@
     <h2 class="section-title">Исправленные</h2>
     @for (fault of fixedFaults(); track fault.id) {
       <ck-fault-card
-        [fault]="fault" [repairs]="repairsOf(fault.id)" [currency]="currency"
+        [fault]="fault" [repairs]="repairsOf(fault.id)" [currency]="currency()"
         [severityLabels]="severityLabels" [severityTones]="severityTones"
         (repairAdd)="openAddRepair(fault.id)"
         (repairEdit)="openEditRepair($event)"
@@ -93,7 +93,7 @@
     </label>
     <div class="grid-2">
       <label class="field">
-        <span class="field-label">Планируемая цена, {{ currency }}</span>
+        <span class="field-label">Планируемая цена, {{ currency() }}</span>
         <input class="input" type="number" name="repairPlannedCost" [(ngModel)]="repairPlannedCost"
                min="0" step="100" />
       </label>
@@ -120,13 +120,13 @@
     <p class="muted">
       «{{ repair.title }}»
       @if (repair.plannedCost) {
-        — планировалось {{ formatMoney(repair.plannedCost, currency) }}.
+        — планировалось {{ formatMoney(repair.plannedCost, currency()) }}.
       }
     </p>
     <form (ngSubmit)="doConfirmRepair()">
       <div class="grid-2">
         <label class="field">
-          <span class="field-label">Фактическая цена, {{ currency }} *</span>
+          <span class="field-label">Фактическая цена, {{ currency() }} *</span>
           <input class="input" type="number" name="actualCost" [(ngModel)]="actualCost"
                  min="0" step="100" required />
         </label>

@@ -16,6 +16,7 @@ import {
   getDoc,
   serverTimestamp,
   setDoc,
+  updateDoc,
 } from '@angular/fire/firestore';
 import { Subscription } from 'rxjs';
 
@@ -77,6 +78,25 @@ export class AuthService {
 
   async logout(): Promise<void> {
     await signOut(this.auth);
+  }
+
+  /** Обновляет профиль: имя (и в Auth, и в Firestore) и/или валюту по умолчанию. */
+  async updateSettings(changes: { displayName?: string; currency?: string }): Promise<void> {
+    const user = this.user();
+    if (!user) {
+      throw new Error('Пользователь не авторизован');
+    }
+    const updates: { displayName?: string; 'settings.currency'?: string } = {};
+    if (changes.displayName !== undefined) {
+      updates['displayName'] = changes.displayName;
+    }
+    if (changes.currency !== undefined) {
+      updates['settings.currency'] = changes.currency;
+    }
+    await updateDoc(this.profileRef(user.uid), updates);
+    if (changes.displayName !== undefined) {
+      await updateProfile(user, { displayName: changes.displayName });
+    }
   }
 
   /** Читает документ профиля; если его нет (регистрация оборвалась) — создаёт. */

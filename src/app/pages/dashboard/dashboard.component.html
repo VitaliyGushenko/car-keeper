@@ -22,7 +22,7 @@
         <ck-stat-tile label="Автомобилей" [value]="carsService.cars().length" />
         <ck-stat-tile
           label="Расходы в этом месяце"
-          [value]="formatMoney(monthExpensesTotal(), defaultCurrency)" />
+          [value]="formatMoney(monthExpensesTotal(), defaultCurrency())" />
         <ck-stat-tile
           label="Просрочено ТО"
           [value]="overdueSchedulesCount()"

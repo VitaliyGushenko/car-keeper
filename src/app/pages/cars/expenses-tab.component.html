@@ -1,8 +1,8 @@
 <!-- Сводки -->
 <div class="stats">
-  <ck-stat-tile label="За всё время" [value]="formatMoney(summary().total, defaultCurrency)" />
-  <ck-stat-tile label="В этом месяце" [value]="formatMoney(summary().thisMonth, defaultCurrency)" />
-  <ck-stat-tile label="В прошлом месяце" [value]="formatMoney(summary().prevMonth, defaultCurrency)" />
+  <ck-stat-tile label="За всё время" [value]="formatMoney(summary().total, defaultCurrency())" />
+  <ck-stat-tile label="В этом месяце" [value]="formatMoney(summary().thisMonth, defaultCurrency())" />
+  <ck-stat-tile label="В прошлом месяце" [value]="formatMoney(summary().prevMonth, defaultCurrency())" />
 </div>
 
 <div class="charts">
@@ -17,7 +17,7 @@
           <div class="cat-bar">
             <div class="cat-bar-fill" [style.width.%]="cat.percent * 100"></div>
           </div>
-          <div class="cat-value">{{ formatMoney(cat.total, defaultCurrency) }}</div>
+          <div class="cat-value">{{ formatMoney(cat.total, defaultCurrency()) }}</div>
         </div>
       }
     }
@@ -91,24 +91,14 @@
 <ck-dialog [open]="dialogOpen()" [title]="editingId() ? 'Изменить расход' : 'Новый расход'"
            (closed)="dialogOpen.set(false)">
   <form (ngSubmit)="save()">
-    <div class="grid-2">
-      <label class="field">
-        <span class="field-label">Категория</span>
-        <select class="select" name="expType" [(ngModel)]="expType">
-          @for (key of typeKeys; track key) {
-            <option [value]="key">{{ typeLabels[key] }}</option>
-          }
-        </select>
-      </label>
-      <label class="field">
-        <span class="field-label">Валюта</span>
-        <select class="select" name="expCurrency" [(ngModel)]="expCurrency">
-          @for (code of currencies; track code) {
-            <option [value]="code">{{ code }}</option>
-          }
-        </select>
-      </label>
-    </div>
+    <label class="field">
+      <span class="field-label">Категория</span>
+      <select class="select" name="expType" [(ngModel)]="expType">
+        @for (key of typeKeys; track key) {
+          <option [value]="key">{{ typeLabels[key] }}</option>
+        }
+      </select>
+    </label>
 
     <label class="field">
       <span class="field-label">Название</span>

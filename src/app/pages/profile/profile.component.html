@@ -1,0 +1,36 @@
+<div class="page">
+  <a routerLink="/" class="back-link faint">← К списку авто</a>
+
+  <div class="card profile-card">
+    <h1>Профиль</h1>
+
+    <label class="field">
+      <span class="field-label">Email</span>
+      <input class="input" type="email" [value]="auth.user()?.email ?? ''" disabled />
+    </label>
+
+    <label class="field">
+      <span class="field-label">Имя</span>
+      <input class="input" name="displayName" [(ngModel)]="displayName"
+             placeholder="Как к вам обращаться" />
+    </label>
+
+    <label class="field">
+      <span class="field-label">Валюта по умолчанию</span>
+      <select class="select" name="currency" [(ngModel)]="currency">
+        @for (code of currencies; track code) {
+          <option [value]="code">{{ code }}</option>
+        }
+      </select>
+      <span class="faint">Используется для новых расходов, сводок и планирования ремонтов</span>
+    </label>
+
+    @if (saved()) {
+      <div class="form-success">Сохранено</div>
+    }
+
+    <button type="button" ckButton="primary" [disabled]="busy()" (click)="save()">
+      {{ busy() ? 'Сохраняем…' : 'Сохранить' }}
+    </button>
+  </div>
+</div>

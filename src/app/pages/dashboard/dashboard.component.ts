@@ -56,7 +56,8 @@ export class DashboardComponent {
   readonly formatDate = formatDate;
   readonly formatInterval = formatInterval;
 
-  readonly defaultCurrency = this.auth.profile()?.settings?.currency ?? 'RUB';
+  /** Валюта из профиля — реактивно. */
+  readonly defaultCurrency = computed(() => this.auth.profile()?.settings?.currency ?? 'RUB');
 
   private readonly cars$ = toObservable(this.carsService.cars);
 
@@ -129,7 +130,7 @@ export class DashboardComponent {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     return this.expenseRows()
-      .filter((row) => row.item.currency === this.defaultCurrency)
+      .filter((row) => row.item.currency === this.defaultCurrency())
       .filter((row) => {
         const date = row.item.date?.toDate?.() ?? null;
         return date ? date >= monthStart : false;

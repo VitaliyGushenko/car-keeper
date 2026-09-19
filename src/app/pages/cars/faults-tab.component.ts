@@ -1,5 +1,4 @@
-import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, computed, inject, input, signal } from '@angular/core';import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '../../core/auth.service';
 import { formatMoney, formatDate, toDateInputValue } from '../../core/format';
@@ -47,7 +46,8 @@ export class FaultsTabComponent implements OnInit {
   readonly faults = this.faultsState.asReadonly();
   readonly repairs = this.repairsState.asReadonly();
 
-  readonly currency = this.auth.profile()?.settings?.currency ?? 'RUB';
+  /** Валюта из профиля — реактивно. */
+  readonly currency = computed(() => this.auth.profile()?.settings?.currency ?? 'RUB');
 
   readonly openFaults = computed(() =>
     this.faults()

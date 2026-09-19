@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard, guestGuard } from './core/auth.guard';
 import { AuthComponent } from './pages/auth/auth.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 export const routes: Routes = [
   { path: 'auth', component: AuthComponent, canActivate: [guestGuard], title: 'Вход — CarKeeper' },
@@ -10,6 +11,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: '', component: DashboardComponent, title: 'Мои автомобили — CarKeeper' },
+      { path: 'profile', component: ProfileComponent, title: 'Профиль — CarKeeper' },
       {
         path: 'cars/new',
         loadComponent: () => import('./pages/cars/car-form.component').then((m) => m.CarFormComponent),
