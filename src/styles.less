@@ -430,10 +430,8 @@ a {
     opacity: 0;
     transform: translateY(8px);
   }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  /* без "to": конечное состояние = естественное, без transform,
+     иначе position:fixed внутри вкладки позиционируется от неё */
 }
 
 .tab-anim {
