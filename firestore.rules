@@ -1,0 +1,65 @@
+rules_version = '2';
+
+// CarKeeper: данные авто доступны только владельцу.
+// Каталоги (3D-модели, дефолтные регламенты) читаются всеми, но пишутся
+// только через Firebase Console (запросы клиентов отклоняются).
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(ownerId) {
+      return isSignedIn() && request.auth.uid == ownerId;
+    }
+
+    function carOwner(carId) {
+      return get(/databases/$(database)/documents/cars/$(carId)).data.ownerId;
+    }
+
+    // Профили пользователей: каждый видит и правит только свой документ.
+    match /users/{uid} {
+      allow read, create, update: if isOwner(uid);
+      allow delete: if false;
+    }
+
+    // Автомобили и все подколлекции (регламенты, неисправности, ремонты, расходы).
+    match /cars/{carId} {
+      allow read: if isOwner(resource.data.ownerId);
+      allow create: if isOwner(request.resource.data.ownerId);
+      allow update: if isOwner(resource.data.ownerId)
+                    && request.resource.data.ownerId == resource.data.ownerId;
+      allow delete: if isOwner(resource.data.ownerId);
+
+      match /schedules/{docId} {
+        allow read, write: if isOwner(carOwner(carId));
+      }
+
+      match /faults/{docId} {
+        allow read, write: if isOwner(carOwner(carId));
+      }
+
+      match /repairs/{docId} {
+        allow read, write: if isOwner(carOwner(carId));
+      }
+
+      match /expenses/{docId} {
+        allow read, write: if isOwner(carOwner(carId));
+      }
+    }
+
+    // Каталог 3D-моделей: public read, запись только из Console.
+    match /vehicleModels/{modelId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Шаблоны дефолтных регламентов: public read, запись только из Console.
+    match /maintenanceTemplates/{templateId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

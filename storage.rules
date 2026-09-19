@@ -1,0 +1,24 @@
+rules_version = '2';
+
+// CarKeeper: файлы каждого авто лежат в cars/{uid}/{carId}/… и доступны
+// только владельцу. Download URL (getDownloadURL) остаётся рабочим для
+// отображения фото и 3D-моделей в приложении.
+// Каталог моделей models/** читается всеми (пишется только из Console).
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    match /cars/{uid}/{carId}/{allPaths=**} {
+      allow read: request.auth != null && request.auth.uid == uid;
+      allow write: request.auth != null
+                   && request.auth.uid == uid
+                   && request.resource.size < 20 * 1024 * 1024;
+      allow delete: request.auth != null && request.auth.uid == uid;
+    }
+
+    match /models/{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}
