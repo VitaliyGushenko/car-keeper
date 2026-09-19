@@ -43,3 +43,6 @@ Thumbs.db
 
 # ZCode session files
 .zcode/
+
+# Firebase CLI cache
+.firebase/
