@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, Injector, computed, inject, runInInjectionContext, signal } from '@angular/core';
 import {
   Auth,
   User,
@@ -25,6 +25,7 @@ import { UserProfile } from './models';
 export class AuthService {
   private readonly auth = inject(Auth);
   private readonly firestore = inject(Firestore);
+  private readonly injector = inject(Injector);
 
   /** Текущий пользователь Firebase Auth. */
   readonly user = signal<User | null>(null);
@@ -82,7 +83,10 @@ export class AuthService {
   private async attachProfile(user: User): Promise<void> {
     this.profileSub?.unsubscribe();
     await this.ensureProfileDoc(user);
-    this.profileSub = docData(this.profileRef(user.uid)).subscribe((profile) => {
+    // onAuthStateChanged вызывается вне injection-контекста — оборачиваем явно.
+    this.profileSub = runInInjectionContext(this.injector, () =>
+      docData(this.profileRef(user.uid)),
+    ).subscribe((profile) => {
       this.profile.set(profile as UserProfile);
     });
   }

@@ -72,6 +72,8 @@ export class ExpensesTabComponent implements OnInit {
 
   readonly dialogOpen = signal(false);
   readonly editingId = signal<string | null>(null);
+  /** Редактируемый расход — чтобы не потерять связь с ремонтом/регламентом при сохранении. */
+  private editingExpense: Expense | null = null;
   expType: ExpenseType = 'fuel';
   expTitle = '';
   expAmount: number | null = null;
@@ -94,6 +96,7 @@ export class ExpensesTabComponent implements OnInit {
 
   openAdd(): void {
     this.editingId.set(null);
+    this.editingExpense = null;
     this.expType = 'fuel';
     this.expTitle = '';
     this.expAmount = null;
@@ -108,6 +111,7 @@ export class ExpensesTabComponent implements OnInit {
 
   openEdit(expense: Expense): void {
     this.editingId.set(expense.id);
+    this.editingExpense = expense;
     this.expType = expense.type;
     this.expTitle = expense.title ?? '';
     this.expAmount = expense.amount;
@@ -147,8 +151,8 @@ export class ExpensesTabComponent implements OnInit {
         mileageAt: this.expMileage,
         notes: this.expNotes.trim() || undefined,
         receipt: this.receiptPreview(),
-        linkedRepairId: null,
-        linkedScheduleId: null,
+        linkedRepairId: this.editingExpense?.linkedRepairId ?? null,
+        linkedScheduleId: this.editingExpense?.linkedScheduleId ?? null,
       };
 
       // Новый чек загружаем и заменяем старый файл.
