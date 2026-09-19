@@ -1,0 +1,170 @@
+@if (faults().length === 0) {
+  <ck-empty-state
+    title="Неисправностей нет"
+    description="Отлично! Когда появится поломка — зафиксируйте её здесь, спланируйте ремонт и подтвердите его после выполнения."
+    icon="🛠">
+    <button type="button" ckButton="primary" action (click)="openAddFault()">Добавить неисправность</button>
+  </ck-empty-state>
+} @else {
+  @for (fault of openFaults(); track fault.id) {
+    <ck-fault-card
+      [fault]="fault" [repairs]="repairsOf(fault.id)" [currency]="currency"
+      [severityLabels]="severityLabels" [severityTones]="severityTones"
+      (repairAdd)="openAddRepair(fault.id)"
+      (repairEdit)="openEditRepair($event)"
+      (repairConfirm)="openConfirmRepair($event)"
+      (repairRemove)="repairRemoveConfirm.set($event)"
+      (faultEdit)="openEditFault(fault)"
+      (faultFix)="markFault('fixed', fault)"
+      (faultRemove)="faultRemoveConfirm.set(fault)" />
+  }
+
+  @if (fixedFaults().length > 0) {
+    <h2 class="section-title">Исправленные</h2>
+    @for (fault of fixedFaults(); track fault.id) {
+      <ck-fault-card
+        [fault]="fault" [repairs]="repairsOf(fault.id)" [currency]="currency"
+        [severityLabels]="severityLabels" [severityTones]="severityTones"
+        (repairAdd)="openAddRepair(fault.id)"
+        (repairEdit)="openEditRepair($event)"
+        (repairConfirm)="openConfirmRepair($event)"
+        (repairRemove)="repairRemoveConfirm.set($event)"
+        (faultEdit)="openEditFault(fault)"
+        (faultUnfix)="markFault('in-work', fault)"
+        (faultRemove)="faultRemoveConfirm.set(fault)" />
+    }
+  }
+
+  <div class="list-footer">
+    <button type="button" ckButton (click)="openAddFault()">+ Добавить неисправность</button>
+  </div>
+}
+
+<!-- Диалог неисправности -->
+<ck-dialog [open]="faultDialogOpen()"
+           [title]="editingFaultId() ? 'Изменить неисправность' : 'Новая неисправность'"
+           (closed)="faultDialogOpen.set(false)">
+  <form (ngSubmit)="saveFault()">
+    <label class="field">
+      <span class="field-label">Что сломалось *</span>
+      <input class="input" name="faultTitle" [(ngModel)]="faultTitle" required
+             placeholder="Например, стучит передняя подвеска" />
+    </label>
+    <label class="field">
+      <span class="field-label">Описание</span>
+      <textarea class="textarea" name="faultDescription" [(ngModel)]="faultDescription"
+                placeholder="Симптомы, условия появления, обстоятельства…"></textarea>
+    </label>
+    <div class="grid-2">
+      <label class="field">
+        <span class="field-label">Серьёзность</span>
+        <select class="select" name="faultSeverity" [(ngModel)]="faultSeverity">
+          @for (key of severityKeys; track key) {
+            <option [value]="key">{{ severityLabels[key] }}</option>
+          }
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Дата обнаружения</span>
+        <input class="input" type="date" name="faultDetectedAt" [(ngModel)]="faultDetectedAt" />
+      </label>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" ckButton (click)="faultDialogOpen.set(false)">Отмена</button>
+      <button type="submit" ckButton="primary" [disabled]="busy()">Сохранить</button>
+    </div>
+  </form>
+</ck-dialog>
+
+<!-- Диалог ремонта -->
+<ck-dialog [open]="repairDialogOpen()"
+           [title]="editingRepairId() ? 'Изменить ремонт' : 'Планируем ремонт'"
+           (closed)="repairDialogOpen.set(false)">
+  <form (ngSubmit)="saveRepair()">
+    <label class="field">
+      <span class="field-label">Название ремонта *</span>
+      <input class="input" name="repairTitle" [(ngModel)]="repairTitle" required
+             placeholder="Например, замена опорных подшипников" />
+    </label>
+    <label class="field">
+      <span class="field-label">Перечень работ</span>
+      <textarea class="textarea" name="repairWorks" [(ngModel)]="repairWorks"
+                placeholder="Что планируется сделать, запчасти…"></textarea>
+    </label>
+    <div class="grid-2">
+      <label class="field">
+        <span class="field-label">Планируемая цена, {{ currency }}</span>
+        <input class="input" type="number" name="repairPlannedCost" [(ngModel)]="repairPlannedCost"
+               min="0" step="100" />
+      </label>
+      <label class="field">
+        <span class="field-label">Планируемая дата</span>
+        <input class="input" type="date" name="repairPlannedDate" [(ngModel)]="repairPlannedDate" />
+      </label>
+    </div>
+    <label class="field">
+      <span class="field-label">Заметки</span>
+      <textarea class="textarea" name="repairNotes" [(ngModel)]="repairNotes"
+                placeholder="Сервис, мастер, телефон…"></textarea>
+    </label>
+    <div class="dialog-actions">
+      <button type="button" ckButton (click)="repairDialogOpen.set(false)">Отмена</button>
+      <button type="submit" ckButton="primary" [disabled]="busy()">Сохранить</button>
+    </div>
+  </form>
+</ck-dialog>
+
+<!-- Диалог подтверждения ремонта -->
+<ck-dialog [open]="confirmDialogOpen()" title="Ремонт выполнен" (closed)="confirmDialogOpen.set(false)">
+  @if (repairToConfirm(); as repair) {
+    <p class="muted">
+      «{{ repair.title }}»
+      @if (repair.plannedCost) {
+        — планировалось {{ formatMoney(repair.plannedCost, currency) }}.
+      }
+    </p>
+    <form (ngSubmit)="doConfirmRepair()">
+      <div class="grid-2">
+        <label class="field">
+          <span class="field-label">Фактическая цена, {{ currency }} *</span>
+          <input class="input" type="number" name="actualCost" [(ngModel)]="actualCost"
+                 min="0" step="100" required />
+        </label>
+        <label class="field">
+          <span class="field-label">Дата ремонта</span>
+          <input class="input" type="date" name="actualDate" [(ngModel)]="actualDate" />
+        </label>
+      </div>
+      <label class="field">
+        <span class="field-label">Комментарий</span>
+        <textarea class="textarea" name="confirmNotes" [(ngModel)]="confirmNotes"
+                  placeholder="Что сделано фактически, отличия от плана…"></textarea>
+      </label>
+      <div class="form-success">
+        Расход на эту сумму автоматически добавится во вкладку «Расходы».
+      </div>
+      <div class="dialog-actions">
+        <button type="button" ckButton (click)="confirmDialogOpen.set(false)">Отмена</button>
+        <button type="submit" ckButton="primary" [disabled]="busy()">Подтвердить</button>
+      </div>
+    </form>
+  }
+</ck-dialog>
+
+<ck-confirm
+  [open]="faultRemoveConfirm() !== null"
+  title="Удалить неисправность?"
+  [message]="'«' + (faultRemoveConfirm()?.title ?? '') + '» и все связанные ремонты будут удалены.'"
+  confirmText="Удалить"
+  [danger]="true"
+  (confirmed)="removeFaultConfirmed()"
+  (cancelled)="faultRemoveConfirm.set(null)" />
+
+<ck-confirm
+  [open]="repairRemoveConfirm() !== null"
+  title="Удалить ремонт?"
+  [message]="'«' + (repairRemoveConfirm()?.title ?? '') + '» будет удалён. Связанный расход останется — его можно удалить во вкладке «Расходы».'"
+  confirmText="Удалить"
+  [danger]="true"
+  (confirmed)="removeRepairConfirmed()"
+  (cancelled)="repairRemoveConfirm.set(null)" />
