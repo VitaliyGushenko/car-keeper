@@ -1,0 +1,381 @@
+<div class="help-page">
+  <div class="help-head">
+    <h1>📖 Обучение</h1>
+    <p class="muted">
+      Короткий экскурс по всем разделам CarKeeper: что и для чего нужно,
+      и на что влияет каждая запись.
+    </p>
+    <a routerLink="/" class="link-btn no-print">← К списку авто</a>
+  </div>
+
+  <nav class="toc no-print">
+    @for (section of sections; track section.id) {
+      <button type="button" class="toc-chip" (click)="scrollTo(section.id)">{{ section.label }}</button>
+    }
+  </nav>
+
+  <!-- 1. Вход и профиль -->
+  <section id="s-start" class="help-section">
+    <h2>Вход и профиль</h2>
+    <p>
+      Вход по email и паролю. Данные каждого пользователя изолированы: вы видите
+      только свои автомобили.
+    </p>
+    <div class="mock-frame">
+      <div class="mock-row"><span class="m-label">Email</span><span class="m-input">you&#64;example.com</span></div>
+      <div class="mock-row"><span class="m-label">Имя</span><span class="m-input">Как к вам обращаться</span></div>
+      <div class="mock-row"><span class="m-label">Валюта</span><span class="m-input">RUB ▾</span></div>
+      <div class="m-btn">Сохранить</div>
+    </div>
+    <div class="help-cols">
+      <div>
+        <h4>Как пользоваться</h4>
+        <ul>
+          <li>Откройте профиль кликом по своему email в шапке.</li>
+          <li>Выберите <b>валюту по умолчанию</b> — она подставляется во все новые расходы.</li>
+          <li>Забыли пароль — ссылка «Забыли пароль?» на экране входа.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>На что влияет</h4>
+        <div class="chips">
+          <span class="chip">Валюта → новые расходы</span>
+          <span class="chip">Валюта → сводки и дашборд</span>
+          <span class="chip">Валюта → цены в ремонтах</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Дашборд -->
+  <section id="s-dashboard" class="help-section">
+    <h2>Дашборд</h2>
+    <p>
+      Главный экран: состояние всего гаража сразу. Показывает, что требует
+      внимания именно сегодня.
+    </p>
+    <div class="mock-frame">
+      <div class="mock-tiles">
+        <div class="mock-tile"><span class="m-label">Автомобилей</span><span class="m-value">2</span></div>
+        <div class="mock-tile"><span class="m-label">Затраты за всё время</span><span class="m-value">48 200 ₽</span></div>
+        <div class="mock-tile"><span class="m-label">Просрочено ТО</span><span class="m-value danger">1</span></div>
+        <div class="mock-tile"><span class="m-label">Открытых поломок</span><span class="m-value">1</span></div>
+      </div>
+      <div class="mock-row"><span class="m-badge danger">Просрочено</span> Замена моторного масла · Lada Vesta</div>
+      <div class="mock-row"><span class="m-badge warn">Скоро</span> Замена тормозной жидкости · Lada Vesta</div>
+    </div>
+    <div class="help-cols">
+      <div>
+        <h4>Как пользоваться</h4>
+        <ul>
+          <li>Плитки сверху — сводные показатели по всем авто.</li>
+          <li>Блоки «Регламенты: пора обслужить» и «Открытые неисправности» — клик ведёт в авто.</li>
+          <li>Карточки авто показывают 3D-модель (или первое фото) и бейджи проблем.</li>
+          <li>Кнопка «+ Добавить авто» — начало работы.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>На что влияет</h4>
+        <div class="chips">
+          <span class="chip">Регламенты → статусы ТО</span>
+          <span class="chip">Неисправности → поломки</span>
+          <span class="chip">Расходы → суммы</span>
+          <span class="chip">Документы → напоминания</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Автомобиль -->
+  <section id="s-car" class="help-section">
+    <h2>Автомобиль: обзор</h2>
+    <p>
+      Профиль каждой машины: характеристики, 3D-модель, фото, актуальный пробег
+      и стоимость владения.
+    </p>
+    <div class="mock-frame">
+      <div class="mock-tiles">
+        <div class="mock-tile"><span class="m-label">Пробег</span><span class="m-value">23 500 км</span></div>
+        <div class="mock-tile"><span class="m-label">Затраты всего</span><span class="m-value">48 200 ₽</span></div>
+        <div class="mock-tile"><span class="m-label">Стоимость километра</span><span class="m-value">9,6 ₽</span></div>
+      </div>
+      <div class="mock-row"><span class="m-label">3D</span> вращающаяся модель / первое фото</div>
+      <div class="mock-row"><span class="m-label">Одометр</span> фото приборки при каждом замере</div>
+    </div>
+    <div class="help-cols">
+      <div>
+        <h4>Как пользоваться</h4>
+        <ul>
+          <li><b>Обновить пробег</b> — после каждой поездки на СТО/заправку; можно приложить фото одометра.</li>
+          <li>Чем чаще замеры пробега, тем точнее прогноз дат обслуживания.</li>
+          <li>Укажите «пробег при покупке» в форме авто — появится честная стоимость километра.</li>
+          <li>3D-модель подставится сама, если она есть в каталоге, или загрузите свой GLB.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>На что влияет</h4>
+        <div class="chips">
+          <span class="chip">Пробег → статусы регламентов</span>
+          <span class="chip">Пробег → прогноз дат ТО</span>
+          <span class="chip">Пробег при покупке → ₽/км</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Регламенты -->
+  <section id="s-schedules" class="help-section">
+    <h2>Регламенты (ТО)</h2>
+    <p>
+      Плановое обслуживание: масло, фильтры, свечи, жидкости. При создании авто
+      добавляется стандартный набор — настройте интервалы под себя.
+    </p>
+    <div class="mock-frame">
+      <div class="mock-row">
+        <span class="m-badge danger">Просрочено</span>
+        <div class="m-bar"><span class="w100"></span></div>
+        <span class="m-faint">23 500 / 20 000 км</span>
+      </div>
+      <div class="mock-row">
+        <span class="m-badge warn">Скоро</span>
+        <div class="m-bar"><span class="w85"></span></div>
+        <span class="m-faint">Салонный фильтр</span>
+      </div>
+      <div class="mock-row">
+        <span class="m-badge ok">В порядке</span>
+        <div class="m-bar"><span class="w40"></span></div>
+        <span class="m-faint">Свечи зажигания</span>
+      </div>
+      <div class="mock-row">Следующая замена на 55 000 км · до 15.03.2027 <span class="m-faint">≈ 12.02.2027 по вашему темпу езды</span></div>
+    </div>
+    <div class="help-cols">
+      <div>
+        <h4>Как пользоваться</h4>
+        <ul>
+          <li>Интервал задаётся в километрах, месяцах или обоих сразу.</li>
+          <li>Статус считается автоматически: <b>Скоро</b> — израсходовано 80%+ интервала.</li>
+          <li>После обслуживания жмите <b>«Отметить выполненным»</b> — запомнит пробег и дату.</li>
+          <li>Прогноз даты появляется, когда в журнале пробегов есть хотя бы 2 замера.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>На что влияет</h4>
+        <div class="chips">
+          <span class="chip">Плитка «Просрочено ТО»</span>
+          <span class="chip">Блок «Пора обслужить»</span>
+          <span class="chip">Бейджи на карточке авто</span>
+          <span class="chip">История</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Неисправности и ремонты -->
+  <section id="s-faults" class="help-section">
+    <h2>Неисправности и ремонты</h2>
+    <p>
+      Фиксируйте поломку, планируйте один или несколько ремонтов, а после выполнения
+      подтверждайте фактическую цену — она может отличаться от плана.
+    </p>
+    <div class="mock-frame">
+      <div class="mock-row"><span class="m-badge warn">Открыта</span> Стучит передняя подвеска · обнаружено 01.09.2026</div>
+      <div class="mock-row nested">
+        <span class="m-badge accent">Запланирован</span>
+        Замена опорных подшипников · план 8 000 ₽
+      </div>
+      <div class="mock-row nested">
+        <span class="m-badge ok">Выполнен</span>
+        Диагностика стойки · факт 2 500 ₽ (план 3 000 ₽)
+      </div>
+    </div>
+    <div class="help-cols">
+      <div>
+        <h4>Как пользоваться</h4>
+        <ul>
+          <li>«+ Ремонт» у неисправности — план: название, работы, цена, дата.</li>
+          <li>Сделали? Жмите <b>«Подтвердить»</b>: вносится фактическая цена и дата.</li>
+          <li>Подтверждённый ремонт сам создаёт расход категории «Ремонт».</li>
+          <li>Поломку закрывайте кнопкой «Исправлена» — уедет в раздел «Исправленные».</li>
+        </ul>
+      </div>
+      <div>
+        <h4>На что влияет</h4>
+        <div class="chips">
+          <span class="chip">Плитка «Открытых поломок»</span>
+          <span class="chip">Бейдж на карточке авто</span>
+          <span class="chip">Расходы (авто-создание)</span>
+          <span class="chip">История</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Заправки -->
+  <section id="s-fuel" class="help-section">
+    <h2>Заправки</h2>
+    <p>
+      Журнал топлива. Главное правило: заправляйтесь «до полного» и отмечайте
+      галочку — тогда расход считается точно.
+    </p>
+    <div class="mock-frame">
+      <div class="mock-tiles">
+        <div class="mock-tile"><span class="m-label">Средний расход</span><span class="m-value">8,4 л/100км</span></div>
+        <div class="mock-tile"><span class="m-label">Стоимость километра</span><span class="m-value">4,8 ₽</span></div>
+      </div>
+      <div class="mock-row">
+        <span class="m-badge info">Полный</span> 40 л × 54,2 ₽ · 19.09.2026 · 23 500 км
+      </div>
+      <div class="mock-row">
+        <span class="m-faint">Расход по этой заправке</span>
+        <div class="m-bar"><span class="w60"></span></div>
+        <span class="m-faint">8,4 л</span>
+      </div>
+    </div>
+    <div class="help-cols">
+      <div>
+        <h4>Как пользоваться</h4>
+        <ul>
+          <li>Записывайте каждую заправку: литры и цена за литр — сумма посчитается сама.</li>
+          <li>Расход л/100км считается по расстоянию между полными баками.</li>
+          <li>Рост расхода без причины — повод заехать на диагностику.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>На что влияет</h4>
+        <div class="chips">
+          <span class="chip">Авто-расход «Топливо»</span>
+          <span class="chip">Одометр авто</span>
+          <span class="chip">Журнал пробегов → прогноз ТО</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Документы -->
+  <section id="s-documents" class="help-section">
+    <h2>Документы и сроки</h2>
+    <p>
+      ОСАГО, КАСКО, техосмотр — всё, что имеет срок действия. Приложение напомнит
+      об окончании за 30 дней.
+    </p>
+    <div class="mock-frame">
+      <div class="mock-row"><span class="m-badge ok">Действует</span> ОСАГО · до 01.06.2027</div>
+      <div class="mock-row"><span class="m-badge warn">Истекает</span> Техосмотр · до 15.10.2026 · истекает через 26 дн.</div>
+      <div class="mock-row"><span class="m-badge danger">Истёк</span> КАСКО · до 01.09.2026</div>
+    </div>
+    <div class="help-cols">
+      <div>
+        <h4>Как пользоваться</h4>
+        <ul>
+          <li>Внесите даты действия и приложите фото полиса.</li>
+          <li>При создании документа можно сразу создать расход на его стоимость.</li>
+          <li>Истекающие и истёкшие документы поднимаются на дашборд.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>На что влияет</h4>
+        <div class="chips">
+          <span class="chip">Бейдж вкладки «Документы»</span>
+          <span class="chip">Расходы (по галочке)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Расходы -->
+  <section id="s-expenses" class="help-section">
+    <h2>Расходы</h2>
+    <p>
+      Все деньги, потраченные на авто: топливо, ремонт, страховка, налоги.
+      Заправки и подтверждённые ремонты попадают сюда автоматически.
+    </p>
+    <div class="mock-frame">
+      <div class="mock-row muted-filters">🔍 поиск · категория ▾ · месяц ▾</div>
+      <div class="mock-row"><span class="m-badge info">Топливо</span> Заправка 40 л · 19.09 · 23 500 км <b class="m-right">2 168 ₽</b></div>
+      <div class="mock-row"><span class="m-badge danger">Ремонт</span> Замена подшипника · 01.09 <b class="m-right">8 000 ₽</b></div>
+      <div class="mock-row"><span class="m-faint">Сводки по категориям и месяцам · экспорт CSV</span></div>
+    </div>
+    <div class="help-cols">
+      <div>
+        <h4>Как пользоваться</h4>
+        <ul>
+          <li>Категория, сумма, дата, пробег — остальное необязательно.</li>
+          <li>Приложите фото чека — не потеряется.</li>
+          <li>Фильтруйте по категории и месяцу, ищите по названию.</li>
+          <li>«⬇ CSV» — выгрузка всей истории в Excel.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>На что влияет</h4>
+        <div class="chips">
+          <span class="chip">Сводки по категориям</span>
+          <span class="chip">График по месяцам</span>
+          <span class="chip">«Затраты всего» и ₽/км</span>
+          <span class="chip">CSV-выгрузка</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. История -->
+  <section id="s-history" class="help-section">
+    <h2>История (timeline)</h2>
+    <p>
+      Хронология всего, что происходило с авто: ТО, поломки, ремонты, заправки,
+      расходы и замеры пробега — в одном списке от новых к старым.
+    </p>
+    <div class="mock-frame">
+      <div class="mock-row">💰 Замена опорного подшипника · 05.09.2026 <b class="m-right">8 000 ₽</b></div>
+      <div class="mock-row">🔧 Замена моторного масла · 20.08.2026</div>
+      <div class="mock-row">🧭 Пробег: 23 500 км · 19.09.2026</div>
+    </div>
+    <div class="help-cols">
+      <div>
+        <h4>Как пользоваться</h4>
+        <ul>
+          <li>Кнопка «🖨 Печать» — распечатайте историю: пригодится при продаже авто.</li>
+          <li>Записи формируются автоматически из остальных разделов.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>На что влияет</h4>
+        <div class="chips">
+          <span class="chip">Только чтение — собирается из всех разделов</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. Тема и 3D -->
+  <section id="s-settings" class="help-section">
+    <h2>Тема и 3D-модели</h2>
+    <p>
+      Оформление и «вау»-функции.
+    </p>
+    <div class="mock-frame">
+      <div class="mock-row">🌙 тёмная → ☀️ светлая → 🖥️ как в системе</div>
+      <div class="mock-row">🚗 3D-модель: каталог по марке+модели или свой GLB-файл</div>
+    </div>
+    <div class="help-cols">
+      <div>
+        <h4>Как пользоваться</h4>
+        <ul>
+          <li>Кнопка темы в шапке переключает режимы по кругу; «как в системе» следит за настройками ОС.</li>
+          <li>Во вкладке «Обзор» авто можно загрузить свой GLB — он заменит модель из каталога.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>На что влияет</h4>
+        <div class="chips">
+          <span class="chip">Тема сохраняется в браузере</span>
+          <span class="chip">3D-модель видна в карточке авто и на дашборде</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="help-footer no-print">
+    <button type="button" class="link-btn" (click)="toTop()">↑ Наверх</button>
+    <a routerLink="/" class="link-btn">← К списку авто</a>
+  </div>
+</div>

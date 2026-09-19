@@ -29,6 +29,8 @@
       <div class="form-success">Сохранено</div>
     }
 
+    <a routerLink="/help" class="link-btn">📖 Обучение и подсказки</a>
+    <div style="height: 10px"></div>
     <button type="button" ckButton="primary" [disabled]="busy()" (click)="save()">
       {{ busy() ? 'Сохраняем…' : 'Сохранить' }}
     </button>
