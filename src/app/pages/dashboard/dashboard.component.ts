@@ -1,10 +1,11 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, computed, inject } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs';
 
 import { AuthService } from '../../core/auth.service';
 import { CarsService } from '../../core/cars.service';
+import { CatalogService } from '../../core/catalog.service';
 import { ExpensesService } from '../../core/expenses.service';
 import { EXPENSE_TYPE_LABELS } from '../../core/expense-summary';
 import { formatMoney, formatNumber, formatDate } from '../../core/format';
@@ -35,6 +36,7 @@ interface FaultRow {
   imports: [RouterLink, UiBadge, UiButton, UiEmptyState, UiSpinner, UiStatTile],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.less',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class DashboardComponent {
   readonly carsService = inject(CarsService);
@@ -42,6 +44,12 @@ export class DashboardComponent {
   private readonly faultsService = inject(FaultsService);
   private readonly expensesService = inject(ExpensesService);
   private readonly auth = inject(AuthService);
+  private readonly catalog = inject(CatalogService);
+
+  // <model-viewer> подгружается отдельным чанком (общим со страницей авто).
+  constructor() {
+    void import('@google/model-viewer');
+  }
 
   readonly formatNumber = formatNumber;
   readonly formatMoney = formatMoney;
@@ -156,6 +164,15 @@ export class DashboardComponent {
 
   carPhoto(carId: string): string | null {
     return this.carsService.carById(carId)?.photos[0]?.url ?? null;
+  }
+
+  /** 3D-модель: своя загрузка имеет приоритет над каталогом. */
+  modelUrl(carId: string): string | null {
+    const car = this.carsService.carById(carId);
+    if (!car) {
+      return null;
+    }
+    return car.customModel?.url ?? this.catalog.findModelByKey(car.modelKey)?.modelUrl ?? null;
   }
 
   private severityWeight(severity: Fault['severity']): number {

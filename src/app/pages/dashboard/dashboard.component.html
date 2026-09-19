@@ -88,8 +88,12 @@
         @for (car of carsService.cars(); track car.id) {
           <a class="card car-card" [routerLink]="['/cars', car.id]">
             <div class="car-photo">
-              @if (carPhoto(car.id); as photo) {
-                <img [src]="photo" [alt]="car.make + ' ' + car.model" loading="lazy" />
+              @if (modelUrl(car.id); as url) {
+                <model-viewer class="car-model" [src]="url" [alt]="car.make + ' ' + car.model"
+                              auto-rotate rotation-per-second="8deg" interaction-prompt="none"
+                              loading="lazy" shadow-intensity="0.8" exposure="1.1"></model-viewer>
+              } @else if (carPhoto(car.id)) {
+                <img [src]="carPhoto(car.id)" [alt]="car.make + ' ' + car.model" loading="lazy" />
               } @else {
                 <span class="car-photo-fallback" aria-hidden="true">🚗</span>
               }
