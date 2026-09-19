@@ -1,0 +1,123 @@
+@if (sorted().length === 0) {
+  <ck-empty-state
+    title="Регламентов пока нет"
+    description="Регламенты по умолчанию добавляются автоматически при создании авто. Здесь их можно настроить под себя."
+    icon="🔧">
+    <button type="button" ckButton="primary" action (click)="openAdd()">Добавить регламент</button>
+  </ck-empty-state>
+} @else {
+  <div class="list">
+    @for (item of sorted(); track item.schedule.id) {
+      <div class="card schedule-item">
+        <div class="row">
+          <div class="grow">
+            <div class="schedule-name">{{ item.schedule.name }}</div>
+            <div class="faint">{{ formatInterval(item.schedule) }}</div>
+          </div>
+          <ck-badge [tone]="statusTone(item.info)">{{ statusLabel(item.info) }}</ck-badge>
+        </div>
+
+        @if (item.info.status !== 'unknown') {
+          <div class="progress">
+            <div class="progress-fill"
+                 [class.warn]="item.info.status === 'due-soon'"
+                 [class.danger]="item.info.status === 'overdue'"
+                 [style.width.%]="item.info.progress * 100"></div>
+          </div>
+          @if (nextDue(item.info)) {
+            <div class="schedule-next">
+              Следующая замена {{ nextDue(item.info) }}
+            </div>
+          }
+        }
+
+        <div class="schedule-meta">
+          @if (item.schedule.lastDoneKm !== null && item.schedule.lastDoneKm !== undefined ||
+               item.schedule.lastDoneDate) {
+            <span class="muted">Выполнено:</span>
+            @if (item.schedule.lastDoneKm !== null && item.schedule.lastDoneKm !== undefined) {
+              <span>{{ formatNumber(item.schedule.lastDoneKm) }} км</span>
+            }
+            @if (item.schedule.lastDoneDate) {
+              <span>{{ formatDate(item.schedule.lastDoneDate) }}</span>
+            }
+          } @else {
+            <span class="faint">Ещё не выполнялось</span>
+          }
+        </div>
+
+        <div class="schedule-actions">
+          <button type="button" ckButton ckSmall (click)="openDone(item.schedule)">
+            Отметить выполненным
+          </button>
+          <button type="button" ckButton="ghost" ckSmall (click)="openEdit(item.schedule)">Изменить</button>
+          <button type="button" ckButton="ghost" ckSmall (click)="removeConfirm.set(item.schedule)">
+            Удалить
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="list-footer">
+    <button type="button" ckButton (click)="openAdd()">+ Добавить регламент</button>
+  </div>
+}
+
+<ck-dialog [open]="dialogOpen()" [title]="editingId() ? 'Изменить регламент' : 'Новый регламент'"
+           (closed)="dialogOpen.set(false)">
+  <form (ngSubmit)="saveDialog()">
+    <label class="field">
+      <span class="field-label">Название *</span>
+      <input class="input" name="name" [(ngModel)]="name" required
+             placeholder="Например, замена масла" />
+    </label>
+    <div class="grid-2">
+      <label class="field">
+        <span class="field-label">Интервал, км</span>
+        <input class="input" type="number" name="intervalKm" [(ngModel)]="intervalKm"
+               min="0" step="500" placeholder="10000" />
+      </label>
+      <label class="field">
+        <span class="field-label">Интервал, месяцев</span>
+        <input class="input" type="number" name="intervalMonths" [(ngModel)]="intervalMonths"
+               min="0" step="1" placeholder="12" />
+      </label>
+    </div>
+    <label class="field">
+      <span class="field-label">Заметки</span>
+      <textarea class="textarea" name="notes" [(ngModel)]="notes"
+                placeholder="Масло 5W-30, оригинальный фильтр…"></textarea>
+    </label>
+    <div class="dialog-actions">
+      <button type="button" ckButton (click)="dialogOpen.set(false)">Отмена</button>
+      <button type="submit" ckButton="primary" [disabled]="busy()">Сохранить</button>
+    </div>
+  </form>
+</ck-dialog>
+
+<ck-dialog [open]="doneDialogOpen()" title="Регламент выполнен" (closed)="doneDialogOpen.set(false)">
+  <form (ngSubmit)="confirmDone()">
+    <label class="field">
+      <span class="field-label">Пробег на момент выполнения, км</span>
+      <input class="input" type="number" name="doneKm" [(ngModel)]="doneKm" min="0" step="1" />
+    </label>
+    <label class="field">
+      <span class="field-label">Дата выполнения</span>
+      <input class="input" type="date" name="doneDate" [(ngModel)]="doneDate" />
+    </label>
+    <div class="dialog-actions">
+      <button type="button" ckButton (click)="doneDialogOpen.set(false)">Отмена</button>
+      <button type="submit" ckButton="primary" [disabled]="busy()">Готово</button>
+    </div>
+  </form>
+</ck-dialog>
+
+<ck-confirm
+  [open]="removeConfirm() !== null"
+  title="Удалить регламент?"
+  [message]="removeConfirm()?.name ?? ''"
+  confirmText="Удалить"
+  [danger]="true"
+  (confirmed)="removeConfirmed()"
+  (cancelled)="removeConfirm.set(null)" />
