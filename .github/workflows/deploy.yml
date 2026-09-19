@@ -22,7 +22,10 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        # --ignore-scripts: esbuild 0.25 (vite) vs 0.28 (@angular/build) ломает
+        # postinstall-проверку версии на чистой установке; бинарники esbuild
+        # ставятся platform-пакетами и без скриптов.
+        run: npm ci --ignore-scripts --no-audit --no-fund
 
       - name: Build (production)
         run: npx ng build --configuration production
