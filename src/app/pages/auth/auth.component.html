@@ -1,0 +1,71 @@
+<div class="auth-page">
+  <div class="auth-card card">
+    <div class="auth-brand">
+      <div class="auth-logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9" />
+          <circle cx="12" cy="12" r="2.6" />
+          <path d="M12 14.6V21" />
+          <path d="M9.5 10.8 3.5 8.6" />
+          <path d="M14.5 10.8 20.5 8.6" />
+        </svg>
+      </div>
+      <h1>CarKeeper</h1>
+      <p class="muted auth-subtitle">Расходы, ремонты и регламенты вашего авто</p>
+    </div>
+
+    <div class="auth-tabs" role="tablist">
+      <button type="button" role="tab" class="auth-tab"
+              [class.active]="mode() === 'login'"
+              [attr.aria-selected]="mode() === 'login'"
+              (click)="setMode('login')">Вход</button>
+      <button type="button" role="tab" class="auth-tab"
+              [class.active]="mode() === 'register'"
+              [attr.aria-selected]="mode() === 'register'"
+              (click)="setMode('register')">Регистрация</button>
+    </div>
+
+    <form (ngSubmit)="submit()" novalidate>
+      @if (mode() === 'register') {
+        <label class="field">
+          <span class="field-label">Имя</span>
+          <input class="input" type="text" name="displayName"
+                 [(ngModel)]="displayName" placeholder="Как к вам обращаться"
+                 autocomplete="name" />
+        </label>
+      }
+
+      <label class="field">
+        <span class="field-label">Email</span>
+        <input class="input" type="email" name="email" required
+               [(ngModel)]="email" placeholder="you@example.com"
+               autocomplete="email" />
+      </label>
+
+      <label class="field">
+        <span class="field-label">Пароль</span>
+        <input class="input" type="password" name="password" required
+               [(ngModel)]="password" placeholder="Минимум 6 символов"
+               [attr.autocomplete]="mode() === 'login' ? 'current-password' : 'new-password'" />
+      </label>
+
+      @if (error()) {
+        <div class="form-error" role="alert">{{ error() }}</div>
+      }
+      @if (notice()) {
+        <div class="form-success">{{ notice() }}</div>
+      }
+
+      <button class="btn btn-primary btn-block auth-submit" type="submit" [disabled]="busy()">
+        {{ busy() ? 'Подождите…' : (mode() === 'login' ? 'Войти' : 'Создать аккаунт') }}
+      </button>
+    </form>
+
+    @if (mode() === 'login') {
+      <div class="auth-footer">
+        <button type="button" class="link-btn" (click)="forgotPassword()">Забыли пароль?</button>
+      </div>
+    }
+  </div>
+</div>
