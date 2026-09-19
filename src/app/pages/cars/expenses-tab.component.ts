@@ -1,7 +1,5 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { defer } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 import { AuthService } from '../../core/auth.service';
 import { ExpensesService } from '../../core/expenses.service';
@@ -41,16 +39,16 @@ const CURRENCIES = ['RUB', 'USD', 'EUR', 'KZT', 'UAH', 'BYN'] as const;
   templateUrl: './expenses-tab.component.html',
   styleUrl: './expenses-tab.component.less',
 })
-export class ExpensesTabComponent {
+export class ExpensesTabComponent implements OnInit {
   readonly car = input.required<Car>();
 
   private readonly expensesService = inject(ExpensesService);
   private readonly storage = inject(StorageService);
   private readonly auth = inject(AuthService);
 
-  readonly expenses = toSignal(defer(() => this.expensesService.watch(this.car().id)), {
-    initialValue: [] as Expense[],
-  });
+  // Подписка в ngOnInit: input.required ещё недоступен в конструкторе (NG0950).
+  private readonly expensesState = signal<Expense[]>([]);
+  readonly expenses = this.expensesState.asReadonly();
 
   readonly typeLabels = EXPENSE_TYPE_LABELS;
   readonly typeTones = TYPE_TONES;
@@ -86,6 +84,13 @@ export class ExpensesTabComponent {
 
   readonly removeConfirm = signal<Expense | null>(null);
   readonly receiptView = signal<StoredFile | null>(null);
+
+  ngOnInit(): void {
+    this.expensesService.watch(this.car().id).subscribe({
+      next: (list) => this.expensesState.set(list),
+      error: (error) => console.warn('expenses: не удалось загрузить расходы', error),
+    });
+  }
 
   openAdd(): void {
     this.editingId.set(null);

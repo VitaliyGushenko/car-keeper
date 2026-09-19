@@ -1,7 +1,5 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { defer } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 import { AuthService } from '../../core/auth.service';
 import { formatMoney, formatDate, toDateInputValue } from '../../core/format';
@@ -35,19 +33,19 @@ const SEVERITY_TONES: Record<FaultSeverity, UiBadgeTone> = {
   templateUrl: './faults-tab.component.html',
   styleUrl: './faults-tab.component.less',
 })
-export class FaultsTabComponent {
+export class FaultsTabComponent implements OnInit {
   readonly car = input.required<Car>();
 
   private readonly faultsService = inject(FaultsService);
   private readonly repairsService = inject(RepairsService);
   private readonly auth = inject(AuthService);
 
-  readonly faults = toSignal(defer(() => this.faultsService.watch(this.car().id)), {
-    initialValue: [] as Fault[],
-  });
-  readonly repairs = toSignal(defer(() => this.repairsService.watch(this.car().id)), {
-    initialValue: [] as Repair[],
-  });
+  // Подписка в ngOnInit: input.required ещё недоступен в конструкторе (NG0950).
+  private readonly faultsState = signal<Fault[]>([]);
+  private readonly repairsState = signal<Repair[]>([]);
+
+  readonly faults = this.faultsState.asReadonly();
+  readonly repairs = this.repairsState.asReadonly();
 
   readonly currency = this.auth.profile()?.settings?.currency ?? 'RUB';
 
@@ -104,6 +102,18 @@ export class FaultsTabComponent {
 
   readonly faultRemoveConfirm = signal<Fault | null>(null);
   readonly repairRemoveConfirm = signal<Repair | null>(null);
+
+  ngOnInit(): void {
+    const carId = this.car().id;
+    this.faultsService.watch(carId).subscribe({
+      next: (list) => this.faultsState.set(list),
+      error: (error) => console.warn('faults: не удалось загрузить неисправности', error),
+    });
+    this.repairsService.watch(carId).subscribe({
+      next: (list) => this.repairsState.set(list),
+      error: (error) => console.warn('repairs: не удалось загрузить ремонты', error),
+    });
+  }
 
   openAddFault(): void {
     this.editingFaultId.set(null);
