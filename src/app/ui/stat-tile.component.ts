@@ -19,6 +19,13 @@ import { Component, input } from '@angular/core';
         flex-direction: column;
         gap: 2px;
         padding: 14px 16px;
+        transition: transform var(--tr) var(--ease), box-shadow var(--tr) ease, border-color var(--tr) ease;
+      }
+
+      .ck-stat:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+        border-color: var(--border-strong);
       }
 
       .ck-stat-label {

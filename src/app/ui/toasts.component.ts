@@ -1,14 +1,16 @@
 import { Component, inject } from '@angular/core';
+import { toastSlide } from './animations';
 
 import { ToastService } from './toast.service';
 
 /** Стек всплывающих уведомлений; монтируется один раз в корневом компоненте. */
 @Component({
   selector: 'ck-toasts',
+  animations: [toastSlide],
   template: `
     <div class="ck-toasts" aria-live="polite">
       @for (toast of toastService.toasts(); track toast.id) {
-        <div class="ck-toast" [class.error]="toast.tone === 'error'"
+        <div class="ck-toast" [class.error]="toast.tone === 'error'" [@toastSlide]
              (click)="toastService.dismiss(toast.id)">
           {{ toast.message }}
         </div>

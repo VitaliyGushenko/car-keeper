@@ -1,4 +1,5 @@
 import { Component, input, output } from '@angular/core';
+import { overlayFade, panelRise } from './animations';
 
 import { UiButton } from './button.directive';
 
@@ -8,11 +9,12 @@ import { UiButton } from './button.directive';
  */
 @Component({
   selector: 'ck-confirm',
+  animations: [overlayFade, panelRise],
   imports: [UiButton],
   template: `
     @if (open()) {
-      <div class="ck-overlay" (mousedown)="onOverlay($event)">
-        <div class="ck-confirm" role="alertdialog" aria-modal="true">
+      <div class="ck-overlay" (mousedown)="onOverlay($event)" [@overlayFade]>
+        <div class="ck-confirm" role="alertdialog" aria-modal="true" [@panelRise]>
           <h3>{{ title() }}</h3>
           <p class="muted">{{ message() }}</p>
           <div class="ck-confirm-actions">

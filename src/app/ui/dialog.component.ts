@@ -1,4 +1,5 @@
 import { Component, booleanAttribute, input, output } from '@angular/core';
+import { overlayFade, panelRise } from './animations';
 
 /**
  * Модальное окно: `<ck-dialog [open]="dlgOpen()" title="…" (closed)="dlgOpen.set(false)">…</ck-dialog>`.
@@ -6,10 +7,11 @@ import { Component, booleanAttribute, input, output } from '@angular/core';
  */
 @Component({
   selector: 'ck-dialog',
+  animations: [overlayFade, panelRise],
   template: `
     @if (open()) {
-      <div class="ck-overlay" (mousedown)="onOverlay($event)">
-        <div class="ck-dialog" role="dialog" aria-modal="true" [attr.aria-label]="title()">
+      <div class="ck-overlay" (mousedown)="onOverlay($event)" [@overlayFade]>
+        <div class="ck-dialog" role="dialog" aria-modal="true" [attr.aria-label]="title()" [@panelRise]>
           <div class="ck-dialog-head">
             <h3>{{ title() }}</h3>
             <button type="button" class="btn-icon" aria-label="Закрыть" (click)="close()">✕</button>

@@ -37,6 +37,7 @@ export interface UiTab {
       }
 
       .ck-tab {
+        position: relative;
         display: inline-flex;
         align-items: center;
         gap: 7px;
@@ -60,6 +61,13 @@ export interface UiTab {
       .ck-tab.active {
         background: var(--accent);
         color: var(--accent-contrast);
+        animation: ck-pop 0.22s var(--ease);
+      }
+
+      @keyframes ck-pop {
+        0% {
+          transform: scale(0.96);
+        }
       }
 
       .ck-tab-badge {

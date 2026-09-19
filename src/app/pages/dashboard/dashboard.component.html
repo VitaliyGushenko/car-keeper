@@ -27,7 +27,7 @@
       </div>
     } @else {
       <!-- Показатели -->
-      <div class="tiles">
+      <div class="tiles stagger">
         <ck-stat-tile label="Автомобилей" [value]="carsService.cars().length" />
         <ck-stat-tile
           label="Затраты за всё время"
@@ -46,7 +46,7 @@
       </div>
 
       <!-- Предстоящие работы -->
-      <div class="panels">
+      <div class="panels stagger">
         <div class="card panel">
           <div class="panel-head">
             <h3 class="grow">Регламенты: пора обслужить</h3>
@@ -77,8 +77,8 @@
           @if (openFaults().length === 0) {
             <p class="muted">Незакрытых поломок нет. 🎉</p>
           } @else {
-            @for (row of openFaults(); track row.fault.id) {
-              <a class="issue-row" [routerLink]="['/cars', row.car.id]">
+            @for (row of openFaults(); track row.fault.id; let i = $index) {
+              <a class="issue-row" [style.--i]="i" [routerLink]="['/cars', row.car.id]">
                 <ck-badge [tone]="row.fault.severity === 'critical' || row.fault.severity === 'high' ? 'danger' : 'warn'">
                   {{ row.fault.status === 'in-work' ? 'В работе' : 'Открыта' }}
                 </ck-badge>
@@ -96,9 +96,9 @@
 
       <!-- Автомобили -->
       <h2>Мои автомобили</h2>
-      <div class="car-grid">
-        @for (car of carsService.cars(); track car.id) {
-          <a class="card car-card" [routerLink]="['/cars', car.id]">
+      <div class="car-grid stagger">
+        @for (car of carsService.cars(); track car.id; let i = $index) {
+          <a class="card car-card card-hover" [style.--i]="i" [routerLink]="['/cars', car.id]">
             <div class="car-photo">
               @if (modelUrl(car.id); as url) {
                 <model-viewer class="car-model" [src]="url" [alt]="car.make + ' ' + car.model"
