@@ -1,0 +1,133 @@
+<div class="page">
+  <a routerLink="/" class="back-link faint">← К списку авто</a>
+
+  @if (loading()) {
+    <ck-spinner />
+  } @else {
+    <div class="card">
+      <h1>{{ isEdit() ? 'Редактирование авто' : 'Новый автомобиль' }}</h1>
+
+      <form (ngSubmit)="save()" novalidate>
+        <div class="grid-2">
+          <label class="field">
+            <span class="field-label">Марка *</span>
+            <input class="input" name="make" list="makes-list" [(ngModel)]="make"
+                   placeholder="Например, Lada" required />
+            <datalist id="makes-list">
+              @for (m of makes; track m) {
+                <option [value]="m"></option>
+              }
+            </datalist>
+          </label>
+
+          <label class="field">
+            <span class="field-label">Модель *</span>
+            <input class="input" name="model" [(ngModel)]="model"
+                   placeholder="Например, Vesta" required />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Год выпуска</span>
+            <input class="input" type="number" name="year" [(ngModel)]="year"
+                   [min]="1930" [max]="maxYear" placeholder="2020" />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Текущий пробег, км</span>
+            <input class="input" type="number" name="mileageKm" [(ngModel)]="mileageKm"
+                   min="0" step="1" placeholder="45000" />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Дата замера пробега</span>
+            <input class="input" type="date" name="mileageDate" [(ngModel)]="mileageDate" />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Дата покупки</span>
+            <input class="input" type="date" name="purchaseDate" [(ngModel)]="purchaseDate" />
+          </label>
+
+          <label class="field">
+            <span class="field-label">VIN</span>
+            <input class="input" name="vin" [(ngModel)]="vin"
+                   placeholder="XTA…" maxlength="17" />
+          </label>
+
+          <label class="field">
+            <span class="field-label">Госномер</span>
+            <input class="input" name="plate" [(ngModel)]="plate" placeholder="А123ВС 777" />
+          </label>
+        </div>
+
+        <label class="field">
+          <span class="field-label">Заметки</span>
+          <textarea class="textarea" name="notes" [(ngModel)]="notes"
+                    placeholder="Особенности, история, планы…"></textarea>
+        </label>
+
+        <div class="field">
+          <span class="field-label">Фотографии</span>
+          <label class="upload-zone">
+            <input type="file" accept="image/*" multiple (change)="onFilesSelected($event)" hidden />
+            <span aria-hidden="true">📷</span>
+            <span>Нажмите, чтобы выбрать фото — или перетащите файлы</span>
+          </label>
+
+          @if (existingPhotos().length + queuedPhotos().length > 0) {
+            <div class="photo-grid">
+              @for (photo of existingPhotos(); track photo.path) {
+                <div class="photo-tile">
+                  <img [src]="photo.url" alt="Фото авто" loading="lazy" />
+                  <button type="button" class="photo-remove" aria-label="Удалить фото"
+                          (click)="photoRemoveConfirm.set(photo)">✕</button>
+                </div>
+              }
+              @for (queued of queuedPhotos(); track queued.previewUrl; let i = $index) {
+                <div class="photo-tile">
+                  <img [src]="queued.previewUrl" alt="Новое фото" />
+                  <button type="button" class="photo-remove" aria-label="Убрать фото"
+                          (click)="removeQueued(i)">✕</button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        @if (error()) {
+          <div class="form-error" role="alert">{{ error() }}</div>
+        }
+
+        <div class="form-actions">
+          @if (isEdit()) {
+            <button type="button" ckButton="danger" (click)="deleteConfirmOpen.set(true)">
+              Удалить авто
+            </button>
+          }
+          <div class="grow"></div>
+          <button type="button" ckButton="ghost" routerLink="/">Отмена</button>
+          <button type="submit" ckButton="primary" [disabled]="saving()">
+            {{ saving() ? 'Сохраняем…' : (isEdit() ? 'Сохранить' : 'Добавить авто') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>
+
+<ck-confirm
+  [open]="deleteConfirmOpen()"
+  title="Удалить автомобиль?"
+  message="Вместе с авто будут удалены все регламенты, неисправности, ремонты и расходы. Действие необратимо."
+  confirmText="Удалить"
+  [danger]="true"
+  (confirmed)="deleteCar()"
+  (cancelled)="deleteConfirmOpen.set(false)" />
+
+<ck-confirm
+  [open]="photoRemoveConfirm() !== null"
+  title="Удалить фото?"
+  confirmText="Удалить"
+  [danger]="true"
+  (confirmed)="removeExistingPhoto()"
+  (cancelled)="photoRemoveConfirm.set(null)" />
