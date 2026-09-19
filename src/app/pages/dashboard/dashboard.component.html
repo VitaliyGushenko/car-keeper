@@ -1,0 +1,121 @@
+<div class="page">
+  @if (carsService.loading()) {
+    <ck-spinner />
+  } @else {
+    <div class="page-head">
+      <h1>Обзор</h1>
+      <button type="button" ckButton="primary" routerLink="/cars/new">+ Добавить авто</button>
+    </div>
+
+    @if (carsService.cars().length === 0) {
+      <div class="card">
+        <ck-empty-state
+          title="Гараж пока пуст"
+          description="Добавьте первый автомобиль — марку, модель и пробег. Регламенты, ремонты и расходы вы сможете вести прямо здесь."
+          icon="🚗">
+          <button type="button" ckButton="primary" action routerLink="/cars/new">Добавить авто</button>
+        </ck-empty-state>
+      </div>
+    } @else {
+      <!-- Показатели -->
+      <div class="tiles">
+        <ck-stat-tile label="Автомобилей" [value]="carsService.cars().length" />
+        <ck-stat-tile
+          label="Расходы в этом месяце"
+          [value]="formatMoney(monthExpensesTotal(), defaultCurrency)" />
+        <ck-stat-tile
+          label="Просрочено ТО"
+          [value]="overdueSchedulesCount()"
+          [hint]="overdueSchedulesCount() > 0 ? 'Пора обслужить' : 'Всё в графике'" />
+        <ck-stat-tile
+          label="Открытых поломок"
+          [value]="openFaultsCount()"
+          [hint]="openFaultsCount() > 0 ? 'Требуют внимания' : 'Машины исправны'" />
+      </div>
+
+      <!-- Предстоящие работы -->
+      <div class="panels">
+        <div class="card panel">
+          <div class="panel-head">
+            <h3 class="grow">Регламенты: пора обслужить</h3>
+          </div>
+          @if (scheduleIssues().length === 0) {
+            <p class="muted">Всё в графике — ничего не просрочено и не подходит близко. 👍</p>
+          } @else {
+            @for (row of scheduleIssues(); track row.schedule.id) {
+              <a class="issue-row" [routerLink]="['/cars', row.car.id]">
+                <ck-badge [tone]="row.info.status === 'overdue' ? 'danger' : 'warn'">
+                  {{ row.info.status === 'overdue' ? 'Просрочено' : 'Скоро' }}
+                </ck-badge>
+                <div class="grow issue-main">
+                  <div class="issue-title">{{ row.schedule.name }}</div>
+                  <div class="faint">
+                    {{ row.car.make }} {{ row.car.model }} · {{ formatInterval(row.schedule) }}
+                  </div>
+                </div>
+              </a>
+            }
+          }
+        </div>
+
+        <div class="card panel">
+          <div class="panel-head">
+            <h3 class="grow">Открытые неисправности</h3>
+          </div>
+          @if (openFaults().length === 0) {
+            <p class="muted">Незакрытых поломок нет. 🎉</p>
+          } @else {
+            @for (row of openFaults(); track row.fault.id) {
+              <a class="issue-row" [routerLink]="['/cars', row.car.id]">
+                <ck-badge [tone]="row.fault.severity === 'critical' || row.fault.severity === 'high' ? 'danger' : 'warn'">
+                  {{ row.fault.status === 'in-work' ? 'В работе' : 'Открыта' }}
+                </ck-badge>
+                <div class="grow issue-main">
+                  <div class="issue-title">{{ row.fault.title }}</div>
+                  <div class="faint">
+                    {{ row.car.make }} {{ row.car.model }} · с {{ formatDate(row.fault.detectedAt) }}
+                  </div>
+                </div>
+              </a>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Автомобили -->
+      <h2>Мои автомобили</h2>
+      <div class="car-grid">
+        @for (car of carsService.cars(); track car.id) {
+          <a class="card car-card" [routerLink]="['/cars', car.id]">
+            <div class="car-photo">
+              @if (carPhoto(car.id); as photo) {
+                <img [src]="photo" [alt]="car.make + ' ' + car.model" loading="lazy" />
+              } @else {
+                <span class="car-photo-fallback" aria-hidden="true">🚗</span>
+              }
+            </div>
+            <div class="car-body">
+              <div class="row">
+                <h3 class="car-title grow">{{ car.make }} {{ car.model }}</h3>
+              </div>
+              <div class="faint">
+                {{ car.year ? car.year + ' г.' : '' }}
+                {{ car.year && car.plate ? '·' : '' }}
+                {{ car.plate }}
+              </div>
+              <div class="car-mileage muted">{{ formatNumber(car.mileageKm) }} км</div>
+              <div class="car-badges">
+                @if (carBadges().get(car.id)?.overdue) {
+                  <ck-badge tone="danger">ТО: {{ carBadges().get(car.id)!.overdue }} просрочено</ck-badge>
+                }
+                @if (carBadges().get(car.id)?.faults) {
+                  <ck-badge tone="warn">Поломок: {{ carBadges().get(car.id)!.faults }}</ck-badge>
+                }
+              </div>
+            </div>
+          </a>
+        }
+      </div>
+    }
+  }
+</div>
