@@ -7,6 +7,7 @@ import { EXPENSE_TYPE_LABELS, summarizeExpenses } from '../../core/expense-summa
 import { formatMoney, formatDate, formatNumber, toDateInputValue, dateInputToTimestamp } from '../../core/format';
 import { Car, Expense, ExpenseDraft, ExpenseType, StoredFile } from '../../core/models';
 import { StorageService } from '../../core/storage.service';
+import { ToastService } from '../../ui/toast.service';
 import { UiBadge, UiBadgeTone } from '../../ui/badge.component';
 import { UiButton } from '../../ui/button.directive';
 import { UiConfirm } from '../../ui/confirm.component';
@@ -43,6 +44,7 @@ export class ExpensesTabComponent implements OnInit {
   private readonly expensesService = inject(ExpensesService);
   private readonly storage = inject(StorageService);
   private readonly auth = inject(AuthService);
+  private readonly toast = inject(ToastService);
 
   // Подписка в ngOnInit: input.required ещё недоступен в конструкторе (NG0950).
   private readonly expensesState = signal<Expense[]>([]);
@@ -165,8 +167,10 @@ export class ExpensesTabComponent implements OnInit {
       const editing = this.editingId();
       if (editing) {
         await this.expensesService.update(carId, editing, draft);
+        this.toast.success('Расход сохранён');
       } else {
         await this.expensesService.create(carId, draft);
+        this.toast.success('Расход добавлен');
       }
       this.dialogOpen.set(false);
     } finally {
@@ -181,6 +185,7 @@ export class ExpensesTabComponent implements OnInit {
     }
     this.removeConfirm.set(null);
     await this.expensesService.remove(this.car().id, expense);
+    this.toast.success('Расход удалён');
   }
 
   maxMonthly(): number {

@@ -7,6 +7,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import '@google/model-viewer';
 
 import { CarsService } from '../../core/cars.service';
+import { ToastService } from '../../ui/toast.service';
 import { CatalogService } from '../../core/catalog.service';
 import { formatNumber, formatRelativeDate, formatDate } from '../../core/format';
 import { MaintenanceSchedule, Fault, StoredFile } from '../../core/models';
@@ -47,6 +48,7 @@ export class CarDetailComponent {
   private readonly router = inject(Router);
   readonly carsService = inject(CarsService);
   private readonly catalog = inject(CatalogService);
+  private readonly toast = inject(ToastService);
 
   private readonly paramMap = toSignal(this.route.paramMap);
   readonly carId = computed(() => this.paramMap()?.get('id') ?? '');
@@ -137,6 +139,7 @@ export class CarDetailComponent {
     }
     this.mileageDialogOpen.set(false);
     await this.carsService.updateMileage(car.id, this.mileageValue, this.mileageDate);
+    this.toast.success('Пробег обновлён');
   }
 
   async deleteCar(): Promise<void> {
@@ -146,6 +149,7 @@ export class CarDetailComponent {
     }
     this.deleteConfirmOpen.set(false);
     await this.carsService.deleteCar(car);
+    this.toast.success('Автомобиль удалён');
     await this.router.navigate(['/']);
   }
 

@@ -4,6 +4,7 @@ import { AuthService } from '../../core/auth.service';
 import { formatMoney, formatDate, toDateInputValue } from '../../core/format';
 import { Car, Fault, FaultSeverity, Repair } from '../../core/models';
 import { FaultsService } from '../../core/faults.service';
+import { ToastService } from '../../ui/toast.service';
 import { RepairsService } from '../../core/repairs.service';
 import { FaultCardComponent } from './fault-card.component';
 import { UiBadgeTone } from '../../ui/badge.component';
@@ -36,6 +37,7 @@ export class FaultsTabComponent implements OnInit {
   readonly car = input.required<Car>();
 
   private readonly faultsService = inject(FaultsService);
+  private readonly toast = inject(ToastService);
   private readonly repairsService = inject(RepairsService);
   private readonly auth = inject(AuthService);
 
@@ -149,8 +151,10 @@ export class FaultsTabComponent implements OnInit {
       const carId = this.car().id;
       if (editing) {
         await this.faultsService.update(carId, editing, draft);
+        this.toast.success('Неисправность сохранена');
       } else {
         await this.faultsService.create(carId, draft);
+        this.toast.success('Неисправность добавлена');
       }
       this.faultDialogOpen.set(false);
     } finally {
@@ -197,8 +201,10 @@ export class FaultsTabComponent implements OnInit {
       const editing = this.editingRepairId();
       if (editing) {
         await this.repairsService.update(carId, editing, draft);
+        this.toast.success('Ремонт сохранён');
       } else {
         await this.repairsService.create(carId, this.repairFaultId()!, draft);
+        this.toast.success('Ремонт запланирован');
       }
       this.repairDialogOpen.set(false);
     } finally {
@@ -229,6 +235,7 @@ export class FaultsTabComponent implements OnInit {
         this.confirmNotes,
       );
       this.confirmDialogOpen.set(false);
+      this.toast.success('Ремонт подтверждён, расход добавлен');
     } finally {
       this.busy.set(false);
     }
@@ -249,8 +256,10 @@ export class FaultsTabComponent implements OnInit {
       // Удаляем и ремонты этой неисправности.
       for (const repair of this.repairsOf(fault.id)) {
         await this.repairsService.remove(this.car().id, repair.id);
+    this.toast.success('Ремонт удалён');
       }
       await this.faultsService.remove(this.car().id, fault.id);
+      this.toast.success('Неисправность удалена');
     } finally {
       this.busy.set(false);
     }

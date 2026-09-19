@@ -358,3 +358,58 @@ a {
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
+/* --- скелетоны ------------------------------------------------ */
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, var(--surface-3), transparent);
+  animation: ck-shimmer 1.4s infinite;
+}
+
+@keyframes ck-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* --- валидация форм ------------------------------------------- */
+
+.input.ng-invalid.ng-touched,
+.select.ng-invalid.ng-touched,
+.textarea.ng-invalid.ng-touched {
+  border-color: var(--danger);
+}
+
+/* --- печать ---------------------------------------------------- */
+
+@media print {
+  .app-header,
+  .back-link,
+  ck-tabs,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .card {
+    box-shadow: none !important;
+    border-color: #ccc !important;
+    background: #fff !important;
+    color: #000 !important;
+  }
+}

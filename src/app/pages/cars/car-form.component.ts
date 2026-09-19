@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { CAR_MAKES } from '../../core/car-makes';
+import { ToastService } from '../../ui/toast.service';
 import { CarsService } from '../../core/cars.service';
 import { dateInputToTimestamp, toDateInputValue } from '../../core/format';
 import { Car, StoredFile } from '../../core/models';
@@ -24,6 +25,7 @@ interface QueuedPhoto {
 export class CarFormComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
   readonly carsService = inject(CarsService);
 
   readonly makes = CAR_MAKES;
@@ -96,10 +98,12 @@ export class CarFormComponent {
       const current = this.editing();
       if (current) {
         await this.carsService.updateCar(current.id, draft);
+        this.toast.success('Автомобиль сохранён');
         await this.uploadQueued(current.id);
         await this.router.navigate(['/cars', current.id]);
       } else {
         const newId = await this.carsService.createCar(draft);
+        this.toast.success('Автомобиль добавлен');
         await this.uploadQueued(newId);
         await this.router.navigate(['/cars', newId]);
       }
@@ -150,6 +154,7 @@ export class CarFormComponent {
     }
     this.deleteConfirmOpen.set(false);
     await this.carsService.deleteCar(car);
+    this.toast.success('Автомобиль удалён');
     await this.router.navigate(['/']);
   }
 

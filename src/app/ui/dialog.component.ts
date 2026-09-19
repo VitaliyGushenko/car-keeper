@@ -64,6 +64,16 @@ import { Component, booleanAttribute, input, output } from '@angular/core';
         padding: 18px;
         overflow-y: auto;
       }
+
+      @media (max-width: 640px) {
+        .ck-overlay {
+          padding: 10px;
+        }
+
+        .ck-dialog {
+          max-width: none;
+        }
+      }
     `,
   ],
   host: {

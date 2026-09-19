@@ -21,9 +21,9 @@
 
       <div class="grow"></div>
 
-      <button type="button" class="btn-icon" (click)="theme.toggle()"
-              [title]="theme.isDark() ? 'Светлая тема' : 'Тёмная тема'">
-        {{ theme.isDark() ? '☀️' : '🌙' }}
+      <button type="button" class="btn-icon" (click)="theme.cycle()"
+              [title]="theme.title()">
+        {{ theme.icon() }}
       </button>
 
       <a routerLink="/profile" class="app-user faint" title="Профиль">{{ auth.user()?.email }}</a>
@@ -36,3 +36,5 @@
     <router-outlet />
   </main>
 }
+
+<ck-toasts />

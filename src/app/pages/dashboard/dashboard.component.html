@@ -1,6 +1,15 @@
 <div class="page">
   @if (carsService.loading()) {
-    <ck-spinner />
+    <div class="sk-tiles">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="skeleton sk-tile"></div>
+      }
+    </div>
+    <div class="sk-cards">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="skeleton sk-car"></div>
+      }
+    </div>
   } @else {
     <div class="page-head">
       <h1>Обзор</h1>

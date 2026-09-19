@@ -4,10 +4,11 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from './core/auth.service';
 import { ThemeService } from './core/theme.service';
 import { UiButton } from './ui/button.directive';
+import { UiToasts } from './ui/toasts.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, UiButton],
+  imports: [RouterOutlet, RouterLink, UiButton, UiToasts],
   templateUrl: './app.component.html',
   styleUrl: './app.component.less',
 })

@@ -54,6 +54,16 @@ import { UiButton } from './button.directive';
         gap: 10px;
         margin-top: 18px;
       }
+
+      @media (max-width: 640px) {
+        .ck-overlay {
+          padding: 10px;
+        }
+
+        .ck-confirm {
+          max-width: none;
+        }
+      }
     `,
   ],
   host: {

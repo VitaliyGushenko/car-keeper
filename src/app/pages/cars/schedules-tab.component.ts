@@ -5,6 +5,7 @@ import { formatDate, formatNumber, toDateInputValue } from '../../core/format';
 import { Car, MaintenanceSchedule, ScheduleDraft, ScheduleStatus } from '../../core/models';
 import { ScheduleStatusInfo, formatInterval, scheduleStatus } from '../../core/schedule-status';
 import { SchedulesService } from '../../core/schedules.service';
+import { ToastService } from '../../ui/toast.service';
 import { UiBadge, UiBadgeTone } from '../../ui/badge.component';
 import { UiButton } from '../../ui/button.directive';
 import { UiConfirm } from '../../ui/confirm.component';
@@ -42,6 +43,7 @@ export class SchedulesTabComponent implements OnInit {
   readonly car = input.required<Car>();
 
   private readonly schedulesService = inject(SchedulesService);
+  private readonly toast = inject(ToastService);
   private readonly schedulesState = signal<MaintenanceSchedule[]>([]);
   private doneSchedule: MaintenanceSchedule | null = null;
 
@@ -142,8 +144,10 @@ export class SchedulesTabComponent implements OnInit {
         draft.lastDoneKm = current?.lastDoneKm ?? null;
         draft.lastDoneDate = current?.lastDoneDate ?? null;
         await this.schedulesService.update(carId, editing, draft);
+        this.toast.success('Регламент сохранён');
       } else {
         await this.schedulesService.create(carId, draft);
+        this.toast.success('Регламент добавлен');
       }
       this.dialogOpen.set(false);
     } finally {
@@ -166,6 +170,7 @@ export class SchedulesTabComponent implements OnInit {
     this.busy.set(true);
     try {
       await this.schedulesService.markDone(this.car().id, schedule.id, this.doneKm, this.doneDate);
+      this.toast.success('Отмечено как выполненное');
       this.doneDialogOpen.set(false);
     } finally {
       this.busy.set(false);
@@ -179,5 +184,6 @@ export class SchedulesTabComponent implements OnInit {
     }
     this.removeConfirm.set(null);
     await this.schedulesService.remove(this.car().id, schedule.id);
+    this.toast.success('Регламент удалён');
   }
 }

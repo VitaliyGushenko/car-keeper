@@ -6,3 +6,5 @@ export * from './tabs.component';
 export * from './stat-tile.component';
 export * from './empty-state.component';
 export * from './spinner.component';
+export * from './toast.service';
+export * from './toasts.component';
