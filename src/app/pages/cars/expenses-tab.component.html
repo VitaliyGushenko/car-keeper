@@ -40,7 +40,7 @@
 </div>
 
 <!-- Список расходов -->
-@if (sorted().length === 0) {
+@if (filtered().length === 0) {
   <div class="card">
     <ck-empty-state
       title="Расходов пока нет"
@@ -73,7 +73,7 @@
       </select>
     </div>
     <div class="exp-list">
-      @for (expense of sorted(); track expense.id) {
+      @for (expense of filtered(); track expense.id) {
         <div class="exp-row">
           <ck-badge [tone]="typeTones[expense.type]">{{ typeLabels[expense.type] }}</ck-badge>
           <div class="grow exp-main">
