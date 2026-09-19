@@ -126,6 +126,12 @@ export class DashboardComponent {
     () => this.faultRows().filter((row) => row.item.status !== 'fixed').length,
   );
 
+  readonly allExpensesTotal = computed(() =>
+    this.expenseRows()
+      .filter((row) => row.item.currency === this.defaultCurrency())
+      .reduce((sum, row) => sum + (row.item.amount || 0), 0),
+  );
+
   readonly monthExpensesTotal = computed(() => {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);

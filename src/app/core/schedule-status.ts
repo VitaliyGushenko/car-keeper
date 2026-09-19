@@ -139,3 +139,41 @@ export function formatInterval(schedule: MaintenanceSchedule): string {
   }
   return parts.join(' / ') || 'интервал не задан';
 }
+
+/** Темп езды, км/день, по журналу пробегов (МНК). Нужны ≥2 точки с разницей дат. */
+export function kmPerDayTrend(history: { odometerKm: number; date: Date }[]): number | null {
+  const pts = [...history].sort((a, b) => a.date.getTime() - b.date.getTime());
+  if (pts.length < 2) {
+    return null;
+  }
+  const t0 = pts[0].date.getTime();
+  const xs = pts.map((p) => (p.date.getTime() - t0) / 86_400_000);
+  const ys = pts.map((p) => p.odometerKm);
+  const n = xs.length;
+  const sumX = xs.reduce((a, b) => a + b, 0);
+  const sumY = ys.reduce((a, b) => a + b, 0);
+  const sumXY = xs.reduce((acc, x, i) => acc + x * ys[i], 0);
+  const sumXX = xs.reduce((acc, x) => acc + x * x, 0);
+  const denom = n * sumXX - sumX * sumX;
+  if (denom <= 0) {
+    return null;
+  }
+  const slope = (n * sumXY - sumX * sumY) / denom;
+  return slope > 0 ? slope : null;
+}
+
+/** Прогноз даты достижения «следующей замены» по км при текущем темпе езды. */
+export function forecastDueDate(
+  info: ScheduleStatusInfo,
+  kmPerDay: number | null,
+  now: Date = new Date(),
+): Date | null {
+  if (!kmPerDay || !info.km || info.km.dueKm === undefined || info.km.overdue) {
+    return null;
+  }
+  const kmLeft = info.km.remainingKm ?? 0;
+  if (kmLeft <= 0) {
+    return null;
+  }
+  return new Date(now.getTime() + (kmLeft / kmPerDay) * 86_400_000);
+}

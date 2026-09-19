@@ -45,6 +45,7 @@ export class CarFormComponent {
   vin = '';
   plate = '';
   purchaseDate = '';
+  purchaseMileageKm: number | null = null;
   notes = '';
 
   /** Фото, уже сохранённые у авто (режим редактирования). */
@@ -92,6 +93,7 @@ export class CarFormComponent {
         vin: this.vin.trim(),
         plate: this.plate.trim(),
         purchaseDate: dateInputToTimestamp(this.purchaseDate),
+        purchaseMileageKm: this.purchaseMileageKm,
         notes: this.notes.trim(),
       };
 
@@ -177,6 +179,7 @@ export class CarFormComponent {
     this.vin = car.vin ?? '';
     this.plate = car.plate ?? '';
     this.purchaseDate = toDateInputValue(car.purchaseDate);
+    this.purchaseMileageKm = car.purchaseMileageKm ?? null;
     this.notes = car.notes ?? '';
   }
 }

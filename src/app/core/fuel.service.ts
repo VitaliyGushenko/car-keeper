@@ -13,6 +13,7 @@ import {
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { AuthService } from './auth.service';
+import { MileageService } from './mileage.service';
 import { dateInputToTimestamp } from './format';
 import { Expense, FuelDraft, FuelEntry } from './models';
 import { watchSubcollection } from './watch-subcollection';
@@ -22,6 +23,7 @@ export class FuelService {
   private readonly firestore = inject(Firestore);
   private readonly auth = inject(AuthService);
   private readonly injector = inject(Injector);
+  private readonly mileage = inject(MileageService);
 
   private readonly cache = new Map<string, BehaviorSubject<FuelEntry[]>>();
 
@@ -42,6 +44,8 @@ export class FuelService {
   async create(carId: string, draft: FuelDraft, currency: string): Promise<string> {
     const ref = doc(collection(this.firestore, 'cars', carId, 'fuel'));
     await setDoc(ref, { ...draft, linkedExpenseId: null, createdAt: serverTimestamp() });
+    // Заправка фиксирует точку пробега и обновляет одометр авто.
+    await this.mileage.add(carId, draft.odometerKm, draft.date, { source: 'fuel' });
     const expenseId = await this.createLinkedExpense(carId, ref.id, draft, currency);
     await updateDoc(ref, { linkedExpenseId: expenseId });
     return ref.id;

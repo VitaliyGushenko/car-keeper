@@ -27,6 +27,9 @@
           @if (nextDue(item.info)) {
             <div class="schedule-next">
               Следующая замена {{ nextDue(item.info) }}
+              @if (forecastDate(item.info); as forecast) {
+                <span class="faint">≈ {{ forecast }} по вашему темпу езды</span>
+              }
             </div>
           }
         }

@@ -21,6 +21,14 @@
 
     @switch (activeTab()) {
       @case ('overview') {
+        <div class="tiles">
+          <ck-stat-tile label="Затраты всего" [value]="formatMoney(totalSpent(), defaultCurrency())" />
+          <ck-stat-tile
+            label="Стоимость километра"
+            [value]="costPerKm() !== null ? formatMoney(costPerKm() ?? 0, defaultCurrency()) : '—'"
+            hint="затраты / пройденный км" />
+        </div>
+
         <div class="overview-grid">
           <div class="card">
             <h3>Пробег</h3>
@@ -146,6 +154,13 @@
     <label class="field">
       <span class="field-label">Дата замера</span>
       <input class="input" type="date" name="mileageDate" [(ngModel)]="mileageDate" />
+    </label>
+    <label class="field">
+      <span class="field-label">Фото одометра (необязательно)</span>
+      <label class="btn btn-ghost" style="width:100%;justify-content:center">
+        <input type="file" accept="image/*" hidden (change)="onOdometerPhotoSelected($event)" />
+        📷 Выбрать фото
+      </label>
     </label>
     <div class="dialog-actions">
       <button type="button" ckButton (click)="mileageDialogOpen.set(false)">Отмена</button>

@@ -39,6 +39,8 @@ export interface Car {
   /** Дата последнего замера пробега. */
   mileageUpdatedAt?: Timestamp | null;
   purchaseDate?: Timestamp | null;
+  /** Пробег на момент покупки — для расчёта стоимости владения. */
+  purchaseMileageKm?: number | null;
   notes?: string;
   photos: StoredFile[];
   /** Нормализованный ключ «марка_модель» для автоподстановки 3D-модели. */

@@ -11,6 +11,8 @@ import {
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 
+import { Timestamp } from '@angular/fire/firestore';
+
 import { AuthService } from './auth.service';
 import { dateInputToTimestamp } from './format';
 import { MileageEntry } from './models';
@@ -46,7 +48,7 @@ export class MileageService {
   async add(
     carId: string,
     odometerKm: number,
-    dateInput: string,
+    date: string | Timestamp | null,
     options: { photoFile?: File | null; source?: 'manual' | 'fuel' } = {},
   ): Promise<void> {
     const uid = this.auth.user()?.uid;
@@ -58,14 +60,14 @@ export class MileageService {
     }
     await setDoc(doc(collection(this.firestore, 'cars', carId, 'mileage')), {
       odometerKm,
-      date: dateInputToTimestamp(dateInput) ?? serverTimestamp(),
+      date: typeof date === 'string' ? (dateInputToTimestamp(date) ?? serverTimestamp()) : (date ?? serverTimestamp()),
       photo: stored,
       source: options.source ?? 'manual',
       createdAt: serverTimestamp(),
     });
     await updateDoc(doc(this.firestore, 'cars', carId), {
       mileageKm: odometerKm,
-      mileageUpdatedAt: dateInputToTimestamp(dateInput) ?? serverTimestamp(),
+      mileageUpdatedAt: typeof date === 'string' ? (dateInputToTimestamp(date) ?? serverTimestamp()) : (date ?? serverTimestamp()),
     });
   }
 

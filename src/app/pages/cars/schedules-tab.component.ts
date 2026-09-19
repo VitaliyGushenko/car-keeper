@@ -3,7 +3,8 @@ import { FormsModule } from '@angular/forms';
 
 import { formatDate, formatNumber, toDateInputValue } from '../../core/format';
 import { Car, MaintenanceSchedule, ScheduleDraft, ScheduleStatus } from '../../core/models';
-import { ScheduleStatusInfo, formatInterval, scheduleStatus } from '../../core/schedule-status';
+import { ScheduleStatusInfo, formatInterval, forecastDueDate, kmPerDayTrend, scheduleStatus } from '../../core/schedule-status';
+import { MileageService } from '../../core/mileage.service';
 import { SchedulesService } from '../../core/schedules.service';
 import { ToastService } from '../../ui/toast.service';
 import { UiBadge, UiBadgeTone } from '../../ui/badge.component';
@@ -43,9 +44,11 @@ export class SchedulesTabComponent implements OnInit {
   readonly car = input.required<Car>();
 
   private readonly schedulesService = inject(SchedulesService);
+  private readonly mileageService = inject(MileageService);
   private readonly toast = inject(ToastService);
   private readonly schedulesState = signal<MaintenanceSchedule[]>([]);
   private doneSchedule: MaintenanceSchedule | null = null;
+  private readonly mileageHistory = signal<{ odometerKm: number; date: Date }[]>([]);
 
   readonly formatNumber = formatNumber;
   readonly formatDate = formatDate;
@@ -82,6 +85,20 @@ export class SchedulesTabComponent implements OnInit {
     this.schedulesService.watch(this.car().id).subscribe((list) => {
       this.schedulesState.set(list);
     });
+    this.mileageService.watch(this.car().id).subscribe((list) => {
+      this.mileageHistory.set(
+        list
+          .map((entry) => ({ odometerKm: entry.odometerKm, date: entry.date?.toDate?.() ?? new Date() }))
+          .sort((a, b) => a.date.getTime() - b.date.getTime()),
+      );
+    });
+  }
+
+  /** Прогнозная дата замены по фактическому темпу езды. */
+  forecastDate(info: ScheduleStatusInfo): string | null {
+    const trend = kmPerDayTrend(this.mileageHistory());
+    const date = forecastDueDate(info, trend);
+    return date ? date.toLocaleDateString('ru-RU') : null;
   }
 
   statusLabel(info: ScheduleStatusInfo): string {

@@ -49,6 +49,12 @@
           </label>
 
           <label class="field">
+            <span class="field-label">Пробег при покупке, км</span>
+            <input class="input" type="number" name="purchaseMileageKm" [(ngModel)]="purchaseMileageKm"
+                   min="0" step="1" placeholder="0" />
+          </label>
+
+          <label class="field">
             <span class="field-label">VIN</span>
             <input class="input" name="vin" [(ngModel)]="vin"
                    placeholder="XTA…" maxlength="17" />
