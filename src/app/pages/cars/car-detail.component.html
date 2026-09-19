@@ -1,0 +1,156 @@
+@if (car(); as c) {
+  <div class="page">
+    <a routerLink="/" class="back-link faint">← К списку авто</a>
+
+    <div class="car-head">
+      <div>
+        <h1>{{ c.make }} {{ c.model }}</h1>
+        <div class="muted">
+          {{ c.year ? c.year + ' г.' : '' }}
+          {{ c.plate ? '· ' + c.plate : '' }}
+          {{ c.vin ? '· VIN: ' + c.vin : '' }}
+        </div>
+      </div>
+      <div class="row">
+        <button type="button" ckButton="ghost" [routerLink]="['/cars', c.id, 'edit']">Редактировать</button>
+        <button type="button" ckButton="danger" (click)="deleteConfirmOpen.set(true)">Удалить</button>
+      </div>
+    </div>
+
+    <ck-tabs [tabs]="tabs()" [active]="activeTab()" (activeChange)="activeTab.set($event)" />
+
+    @switch (activeTab()) {
+      @case ('overview') {
+        <div class="overview-grid">
+          <div class="card">
+            <h3>Пробег</h3>
+            <div class="mileage-value">{{ formatNumber(c.mileageKm) }} <span class="muted">км</span></div>
+            <div class="faint">Замер: {{ formatRelativeDate(c.mileageUpdatedAt) }}</div>
+            <button type="button" ckButton ckSmall class="mt-8" (click)="openMileageDialog()">
+              Обновить пробег
+            </button>
+          </div>
+
+          <div class="card">
+            <h3>Информация</h3>
+            <dl class="spec-list">
+              <div><dt>Год выпуска</dt><dd>{{ c.year ? c.year : '—' }}</dd></div>
+              <div><dt>Дата покупки</dt><dd>{{ formatDate(c.purchaseDate) }}</dd></div>
+              <div><dt>VIN</dt><dd>{{ c.vin || '—' }}</dd></div>
+              <div><dt>Госномер</dt><dd>{{ c.plate || '—' }}</dd></div>
+              @if (c.notes) {
+                <div class="spec-notes"><dt>Заметки</dt><dd>{{ c.notes }}</dd></div>
+              }
+            </dl>
+          </div>
+        </div>
+
+        <div class="card mt-16">
+          <div class="card-head">
+            <h3 class="grow">3D-модель</h3>
+            @if (modelUrl()) {
+              @if (c.customModel) {
+                <button type="button" ckButton="ghost" ckSmall [disabled]="modelBusy()"
+                        (click)="removeCustomModel()">Убрать загруженную модель</button>
+              }
+            } @else {
+              <label class="btn btn-ghost btn-sm">
+                <input type="file" accept=".glb,.gltf" hidden
+                       (change)="onModelFileSelected($event)" />
+                {{ modelBusy() ? 'Загружаем…' : 'Загрузить свой GLB' }}
+              </label>
+            }
+          </div>
+
+          @if (modelUrl(); as url) {
+            <model-viewer class="model-viewer" [src]="url" alt="3D-модель автомобиля"
+                          camera-controls touch-action="pan-y" auto-rotate
+                          rotation-per-second="12deg" shadow-intensity="1"
+                          exposure="1.1"></model-viewer>
+            @if (!c.customModel && catalogModel()) {
+              <div class="faint mt-8">
+                Модель подставлена автоматически из каталога
+                ({{ catalogModel()?.make }} {{ catalogModel()?.model }}).
+              </div>
+            }
+          } @else {
+            <p class="muted">
+              Для «{{ c.make }} {{ c.model }}» пока нет 3D-модели. Если она появится в каталоге,
+              она добавится сюда автоматически. А пока можно загрузить свой файл в формате GLB/GLTF.
+            </p>
+          }
+        </div>
+
+        <div class="card mt-16">
+          <h3>Фотографии</h3>
+          @if (c.photos.length === 0) {
+            <p class="muted">Фото пока нет — добавьте их в редактировании авто.</p>
+          } @else {
+            <div class="photo-strip">
+              @for (photo of c.photos; track photo.path) {
+                <img [src]="photo.url" alt="Фото авто" loading="lazy"
+                     (click)="lightboxPhoto.set(photo)" />
+              }
+            </div>
+          }
+        </div>
+      }
+
+      @case ('schedules') {
+        <ck-schedules-tab [car]="c" />
+      }
+
+      @case ('faults') {
+        <ck-faults-tab [car]="c" />
+      }
+
+      @case ('expenses') {
+        <ck-expenses-tab [car]="c" />
+      }
+    }
+  </div>
+} @else if (carsService.loading()) {
+  <ck-spinner />
+} @else {
+  <div class="card">
+    <ck-empty-state
+      title="Автомобиль не найден"
+      description="Возможно, он был удалён или принадлежит другому аккаунту."
+      icon="🔍">
+      <button type="button" ckButton="primary" action routerLink="/">К списку авто</button>
+    </ck-empty-state>
+  </div>
+}
+
+<ck-dialog [open]="lightboxPhoto() !== null" (closed)="lightboxPhoto.set(null)">
+  @if (lightboxPhoto(); as photo) {
+    <img class="lightbox-img" [src]="photo.url" alt="Фото авто" />
+  }
+</ck-dialog>
+
+<ck-dialog [open]="mileageDialogOpen()" title="Обновить пробег" (closed)="mileageDialogOpen.set(false)">
+  <form (ngSubmit)="saveMileage()">
+    <label class="field">
+      <span class="field-label">Пробег, км</span>
+      <input class="input" type="number" name="mileageValue" min="0" step="1"
+             [(ngModel)]="mileageValue" required />
+    </label>
+    <label class="field">
+      <span class="field-label">Дата замера</span>
+      <input class="input" type="date" name="mileageDate" [(ngModel)]="mileageDate" />
+    </label>
+    <div class="dialog-actions">
+      <button type="button" ckButton (click)="mileageDialogOpen.set(false)">Отмена</button>
+      <button type="submit" ckButton="primary">Сохранить</button>
+    </div>
+  </form>
+</ck-dialog>
+
+<ck-confirm
+  [open]="deleteConfirmOpen()"
+  title="Удалить автомобиль?"
+  message="Вместе с авто будут удалены все регламенты, неисправности, ремонты и расходы. Действие необратимо."
+  confirmText="Удалить"
+  [danger]="true"
+  (confirmed)="deleteCar()"
+  (cancelled)="deleteConfirmOpen.set(false)" />

@@ -1,0 +1,121 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.back-link {
+  align-self: flex-start;
+}
+
+.car-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.mileage-value {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.mt-8 {
+  margin-top: 8px;
+}
+
+.mt-16 {
+  margin-top: 2px;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.model-viewer {
+  width: 100%;
+  height: 380px;
+  border-radius: var(--radius-sm);
+  background:
+    radial-gradient(600px 240px at 50% 0%, var(--accent-soft), transparent 70%),
+    var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.model-upload input {
+  display: none;
+}
+
+.spec-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.spec-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.spec-list dt {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.spec-list dd {
+  margin: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.spec-notes {
+  flex-direction: column;
+  gap: 2px !important;
+}
+
+.spec-notes dd {
+  text-align: left;
+}
+
+.photo-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.photo-strip img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  cursor: zoom-in;
+}
+
+.lightbox-img {
+  width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
