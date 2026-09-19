@@ -1,59 +1,98 @@
 # CarKeeper
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.4.
+Учёт автомобилей: расходы, ремонты, регламенты обслуживания и 3D-модели.
 
-## Development server
+Angular 19 (standalone, signals) + Firebase (Auth, Firestore, Storage, Hosting, Analytics).
 
-To start a local development server, run:
+## Возможности
 
-```bash
-ng serve
-```
+- **Авторизация** — email/пароль (Firebase Auth), русский текст ошибок, восстановление пароля.
+- **Автомобили** — марка, модель, год, VIN, госномер, пробег с датой замера, фото (сжатие на клиенте).
+- **3D-модели** — автоподстановка по марке+модели из каталога `vehicleModels`, просмотр через `<model-viewer>`, можно загрузить свой GLB.
+- **Регламенты ТО** — дефолтный набор копируется при добавлении авто; интервалы по км и месяцам; статусы «в порядке / скоро / просрочено».
+- **Неисправности и ремонты** — одна неисправность → несколько ремонтов: план (цена, дата) → подтверждение с фактической ценой и датой.
+- **Расходы** — топливо/ремонт/страховка/налоги, фото чека, сводки по категориям и месяцам; подтверждённые ремонты попадают в расходы автоматически.
+- **Дашборд** — просроченные ТО и открытые поломки по всем авто, расходы за месяц.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Разработка
 
 ```bash
-ng generate --help
+npm install     # один раз
+npm start       # http://localhost:4200
+npm run build   # прод-сборка → dist/car-keeper/browser
+npm test        # unit-тесты (Karma)
 ```
 
-## Building
+Конфиг Firebase уже лежит в `src/environments/environment.ts` (для прод-сборки — `environment.prod.ts`, подставляется через fileReplacements).
 
-To build the project run:
+## Firebase-проект
+
+Проект: **car-keeper-a97bb** (см. `.firebaserc`).
+
+Перед первым запуском в Firebase Console:
+
+1. **Authentication → Sign-in method** — включить провайдер **Email/Password**.
+2. **Firestore Database** — создать базу (production mode).
+3. **Storage** — создать бакет (production mode).
+
+Правила безопасности живут в репозитории: `firestore.rules` и `storage.rules` — деплоятся CI-ем вместе с хостингом (или вручную: `firebase deploy --only firestore:rules,storage`).
+
+## Структура данных (Firestore)
+
+```
+users/{uid}                             — email, настройки (валюта)
+cars/{carId}                            — авто владельца uid
+  ├── schedules/{id}                    — регламенты ТО
+  ├── faults/{id}                       — неисправности
+  ├── repairs/{id}                      — ремонты (faultId → неисправность)
+  └── expenses/{id}                     — расходы (linkedRepairId → ремонт)
+vehicleModels/{make_model}              — каталог 3D-моделей (public read)
+maintenanceTemplates/{id}               — шаблоны регламентов (public read)
+```
+
+Storage:
+
+```
+cars/{uid}/{carId}/photos/**            — фото авто
+cars/{uid}/{carId}/receipts/**          — фото чеков
+cars/{uid}/{carId}/model/**             — пользовательские GLB
+models/**                               — GLB каталога (public read)
+```
+
+## Каталог 3D-моделей
+
+Чтобы 3D-модель подставилась автоматически:
+
+1. Загрузите файл GLB в Storage в папку `models/` (например `models/lada_vesta.glb`).
+2. Скопируйте его **download URL**.
+3. В Firestore создайте документ в коллекции `vehicleModels` с id `lada_vesta` (нормализованные марка_модель, латиница/кириллица в нижнем регистре):
+
+| поле | значение |
+|---|---|
+| `make` | `Lada` |
+| `model` | `Vesta` |
+| `modelUrl` | `https://firebasestorage…` |
+| `previewUrl` | (необязательно) ссылка на превью |
+
+Пользователь добавит авто «Lada Vesta» — модель подставится сама (см. `core/normalize.ts`).
+
+## Деплой (GitHub Actions → Firebase Hosting)
+
+Пуш в `main` автоматически собирает прод-версию и деплоит hosting + правила (`.github/workflows/deploy.yml`).
+
+Одна настройка — секрет `FIREBASE_SERVICE_ACCOUNT` в GitHub (Settings → Secrets and variables → Actions):
 
 ```bash
-ng build
+# 1. Создайте service account с ролью «Firebase Admin» (или используйте firebase-adminsdk из проекта):
+#    Firebase Console → Project settings → Service accounts → Generate new private key
+# 2. Сохраните содержимое JSON-ключа как секрет FIREBASE_SERVICE_ACCOUNT.
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Локальный деплой (если нужно вручную): `firebase deploy` после `firebase login`.
 
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## Git
 
 ```bash
-ng test
+git remote -v   # origin → github.com/VitaliyGushenko/car-keeper.git
+git push -u origin main
 ```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
