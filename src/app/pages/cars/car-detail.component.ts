@@ -22,6 +22,7 @@ import { FaultsTabComponent } from './faults-tab.component';
 import { ExpensesTabComponent } from './expenses-tab.component';
 import { FuelTabComponent } from './fuel-tab.component';
 import { DocumentsTabComponent } from './documents-tab.component';
+import { HistoryTabComponent } from './history-tab.component';
 import { FuelService } from '../../core/fuel.service';
 import { DocumentsService } from '../../core/documents.service';
 import { Expense, FuelEntry, VehicleDocument } from '../../core/models';
@@ -51,6 +52,7 @@ import { UiTabs, UiTab } from '../../ui/tabs.component';
     UiStatTile,
     FuelTabComponent,
     DocumentsTabComponent,
+    HistoryTabComponent,
   ],
   templateUrl: './car-detail.component.html',
   styleUrl: './car-detail.component.less',
@@ -112,6 +114,7 @@ export class CarDetailComponent {
       label: 'Документы',
       badge: expiringOrExpired(this.documents()).length,
     },
+    { key: 'history', label: 'История' },
   ]);
 
   /** Фото для полноэкранного просмотра. */

@@ -112,6 +112,10 @@
         <ck-faults-tab [car]="c" />
       }
 
+      @case ('history') {
+        <ck-history-tab [car]="c" />
+      }
+
       @case ('fuel') {
         <ck-fuel-tab [car]="c" />
       }

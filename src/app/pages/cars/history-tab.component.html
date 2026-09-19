@@ -1,0 +1,32 @@
+@if (items().length === 0) {
+  <div class="card">
+    <ck-empty-state
+      title="История пока пуста"
+      description="Здесь появится хронология: выполненные регламенты, неисправности, ремонты, заправки и расходы."
+      icon="📜">
+    </ck-empty-state>
+  </div>
+} @else {
+  <div class="card">
+    <div class="head">
+      <h3 class="grow">История обслуживания и расходов</h3>
+      <button type="button" ckButton="ghost" ckSmall class="no-print" (click)="print()">
+        🖨 Печать
+      </button>
+    </div>
+    <div class="timeline">
+      @for (item of items(); track $index) {
+        <div class="tl-row">
+          <div class="tl-icon" aria-hidden="true">{{ item.icon }}</div>
+          <div class="grow tl-main">
+            <div class="tl-title">{{ item.title }}</div>
+            <div class="faint">{{ item.subtitle }} · {{ formatDate(item.date) }}</div>
+          </div>
+          @if (item.amount) {
+            <div class="tl-amount">{{ formatMoney(item.amount, item.currency ?? 'RUB') }}</div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

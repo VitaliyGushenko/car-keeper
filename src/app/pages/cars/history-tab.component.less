@@ -1,0 +1,47 @@
+.head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.tl-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.tl-row:last-child {
+  border-bottom: none;
+}
+
+.tl-icon {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.tl-title {
+  font-weight: 600;
+}
+
+.tl-amount {
+  font-weight: 700;
+  white-space: nowrap;
+}

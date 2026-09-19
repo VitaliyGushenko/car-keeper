@@ -7,6 +7,7 @@ import { EXPENSE_TYPE_LABELS, summarizeExpenses } from '../../core/expense-summa
 import { formatMoney, formatDate, formatNumber, toDateInputValue, dateInputToTimestamp } from '../../core/format';
 import { Car, Expense, ExpenseDraft, ExpenseType, StoredFile } from '../../core/models';
 import { StorageService } from '../../core/storage.service';
+import { downloadCsv, expensesToCsv, csvFileName } from '../../core/export';
 import { ToastService } from '../../ui/toast.service';
 import { UiBadge, UiBadgeTone } from '../../ui/badge.component';
 import { UiButton } from '../../ui/button.directive';
@@ -84,6 +85,47 @@ export class ExpensesTabComponent implements OnInit {
   receiptPreview = signal<StoredFile | null>(null);
 
   readonly removeConfirm = signal<Expense | null>(null);
+
+  // Фильтры истории
+  readonly searchTerm = signal('');
+  readonly typeFilter = signal<'all' | ExpenseType>('all');
+  readonly monthFilter = signal<'all' | string>('all');
+
+  readonly months = computed(() => {
+    const set = new Set<string>();
+    for (const e of this.expenses()) {
+      const d = e.date?.toDate?.();
+      if (d) set.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+    }
+    return [...set].sort().reverse();
+  });
+
+  readonly filtered = computed(() => {
+    const search = this.searchTerm().trim().toLowerCase();
+    const type = this.typeFilter();
+    const month = this.monthFilter();
+    return this.sorted().filter((e) => {
+      if (type !== 'all' && e.type !== type) return false;
+      if (month !== 'all') {
+        const d = e.date?.toDate?.();
+        if (!d) return false;
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        if (key !== month) return false;
+      }
+      if (search) {
+        const haystack = `${e.title ?? ''} ${e.notes ?? ''} ${this.typeLabels[e.type]}`.toLowerCase();
+        if (!haystack.includes(search)) return false;
+      }
+      return true;
+    });
+  });
+
+  exportCsv(): void {
+    const make = this.car().make;
+    const model = this.car().model;
+    downloadCsv(csvFileName(make, model), expensesToCsv(this.sorted()));
+    this.toast.success('CSV выгружен');
+  }
   readonly receiptView = signal<StoredFile | null>(null);
 
   ngOnInit(): void {

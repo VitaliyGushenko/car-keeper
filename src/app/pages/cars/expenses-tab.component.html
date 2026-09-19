@@ -53,7 +53,24 @@
   <div class="card">
     <div class="exp-head">
       <h3 class="grow">История расходов</h3>
+      <button type="button" ckButton="ghost" ckSmall (click)="exportCsv()">⬇ CSV</button>
       <button type="button" ckButton="primary" ckSmall (click)="openAdd()">+ Расход</button>
+    </div>
+    <div class="filters no-print">
+      <input class="input" placeholder="Поиск по названию и заметкам"
+             [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" name="expSearch" />
+      <select class="select" [ngModel]="typeFilter()" (ngModelChange)="typeFilter.set($event)" name="expTypeFilter">
+        <option value="all">Все категории</option>
+        @for (key of typeKeys; track key) {
+          <option [value]="key">{{ typeLabels[key] }}</option>
+        }
+      </select>
+      <select class="select" [ngModel]="monthFilter()" (ngModelChange)="monthFilter.set($event)" name="expMonthFilter">
+        <option value="all">Все месяцы</option>
+        @for (month of months(); track month) {
+          <option [value]="month">{{ month }}</option>
+        }
+      </select>
     </div>
     <div class="exp-list">
       @for (expense of sorted(); track expense.id) {

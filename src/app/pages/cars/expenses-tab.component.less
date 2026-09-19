@@ -95,6 +95,19 @@
   color: var(--text-muted);
 }
 
+.filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 640px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}
+
 .exp-head {
   display: flex;
   align-items: center;
