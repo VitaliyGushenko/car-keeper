@@ -42,8 +42,17 @@ Firebase Storage требует план Blaze с привязанной кар�
 
 1. Зарегистрируйтесь на [supabase.com](https://supabase.com) и создайте проект (Free).
 2. **Storage → New bucket**: имя `car-keeper`, включите **Public bucket**.
-3. **Project Settings → API**: скопируйте **Project URL** и **anon public key**.
-4. Впишите их в `src/environments/environment.ts` и `environment.prod.ts` (поля `supabase.url` / `supabase.anonKey`).
+3. **SQL Editor → New query** — выполните (публичный бакет открывает только чтение; для загрузки нужны RLS-политики):
+
+```sql
+create policy "car-keeper read"   on storage.objects for select to anon, authenticated using (bucket_id = 'car-keeper');
+create policy "car-keeper insert" on storage.objects for insert to anon, authenticated with check (bucket_id = 'car-keeper');
+create policy "car-keeper update" on storage.objects for update to anon, authenticated using (bucket_id = 'car-keeper');
+create policy "car-keeper delete" on storage.objects for delete to anon, authenticated using (bucket_id = 'car-keeper');
+```
+
+4. **Project Settings → API**: скопируйте **Project URL** и **publishable key**.
+5. Впишите их в `src/environments/environment.ts` и `environment.prod.ts` (поля `supabase.url` / `supabase.anonKey`).
 
 CORS у Supabase Storage открыт по умолчанию — ничего дополнительно настраивать не нужно.
 
