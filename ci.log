@@ -1,0 +1,259 @@
+﻿2026-09-19T08:07:33.3159006Z Current runner version: '2.337.0'
+2026-09-19T08:07:33.3184217Z ##[group]Runner Image Provisioner
+2026-09-19T08:07:33.3185144Z Hosted Compute Agent
+2026-09-19T08:07:33.3185817Z Version: 20260828.587
+2026-09-19T08:07:33.3186513Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+2026-09-19T08:07:33.3187503Z Build Date: 2026-08-28T16:44:25Z
+2026-09-19T08:07:33.3188341Z Worker ID: {addd52f3-c3eb-4f9f-83f2-0f7c78b122f3}
+2026-09-19T08:07:33.3189105Z Azure Region: westcentralus
+2026-09-19T08:07:33.3189782Z ##[endgroup]
+2026-09-19T08:07:33.3191398Z ##[group]Operating System
+2026-09-19T08:07:33.3192047Z Ubuntu
+2026-09-19T08:07:33.3192705Z 24.04.5
+2026-09-19T08:07:33.3193246Z LTS
+2026-09-19T08:07:33.3193767Z ##[endgroup]
+2026-09-19T08:07:33.3194421Z ##[group]Runner Image
+2026-09-19T08:07:33.3195094Z Image: ubuntu-24.04
+2026-09-19T08:07:33.3195776Z Version: 20260907.300.1
+2026-09-19T08:07:33.3197240Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260907.300/images/ubuntu/Ubuntu2404-Readme.md
+2026-09-19T08:07:33.3198832Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260907.300
+2026-09-19T08:07:33.3199869Z ##[endgroup]
+2026-09-19T08:07:33.3201459Z ##[group]GITHUB_TOKEN Permissions
+2026-09-19T08:07:33.3203820Z Contents: read
+2026-09-19T08:07:33.3204523Z Metadata: read
+2026-09-19T08:07:33.3205107Z ##[endgroup]
+2026-09-19T08:07:33.3207494Z Secret source: Actions
+2026-09-19T08:07:33.3208630Z Cache mode: write
+2026-09-19T08:07:33.3209338Z Prepare workflow directory
+2026-09-19T08:07:33.3549850Z Prepare all required actions
+2026-09-19T08:07:33.3599466Z Getting action download info
+2026-09-19T08:07:33.6781269Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-09-19T08:07:33.7660730Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-09-19T08:07:33.8589963Z Download action repository 'w9jds/firebase-action@master' (SHA:844c33e381350ae5c600052ba95188f40572d8e0)
+2026-09-19T08:07:34.2033485Z Complete job name: build-and-deploy
+2026-09-19T08:07:34.2523181Z ##[group]Pull down action image 'w9jds/firebase-action:v15.30.2'
+2026-09-19T08:07:34.2651552Z ##[command]/usr/bin/docker pull w9jds/firebase-action:v15.30.2
+2026-09-19T08:07:35.0175321Z v15.30.2: Pulling from w9jds/firebase-action
+2026-09-19T08:07:35.0177295Z 09923199ca0e: Pulling fs layer
+2026-09-19T08:07:35.0178095Z d9b985643753: Pulling fs layer
+2026-09-19T08:07:35.0178703Z 54b65625b9bd: Pulling fs layer
+2026-09-19T08:07:35.0179306Z 268d5e11756b: Pulling fs layer
+2026-09-19T08:07:35.0179881Z 30447c4d35fd: Pulling fs layer
+2026-09-19T08:07:35.0180454Z 0fa3a4921cac: Pulling fs layer
+2026-09-19T08:07:35.0181078Z 2cba65371cbe: Pulling fs layer
+2026-09-19T08:07:35.0181669Z 51c22f27c833: Pulling fs layer
+2026-09-19T08:07:35.0182242Z 701e6b9b3c7a: Pulling fs layer
+2026-09-19T08:07:35.0182822Z 6e3d575a999c: Pulling fs layer
+2026-09-19T08:07:35.0183405Z 4ded09a06161: Pulling fs layer
+2026-09-19T08:07:35.0183989Z fba3baff8f44: Pulling fs layer
+2026-09-19T08:07:35.0184713Z 268d5e11756b: Waiting
+2026-09-19T08:07:35.0185260Z 51c22f27c833: Waiting
+2026-09-19T08:07:35.0185872Z 701e6b9b3c7a: Waiting
+2026-09-19T08:07:35.0186379Z 6e3d575a999c: Waiting
+2026-09-19T08:07:35.0186888Z fba3baff8f44: Waiting
+2026-09-19T08:07:35.0187602Z 0fa3a4921cac: Waiting
+2026-09-19T08:07:35.0188124Z 2cba65371cbe: Waiting
+2026-09-19T08:07:35.0188634Z 4ded09a06161: Waiting
+2026-09-19T08:07:35.0189143Z 30447c4d35fd: Waiting
+2026-09-19T08:07:35.2187851Z d9b985643753: Verifying Checksum
+2026-09-19T08:07:35.2188919Z d9b985643753: Download complete
+2026-09-19T08:07:35.4993232Z 54b65625b9bd: Verifying Checksum
+2026-09-19T08:07:35.4994623Z 54b65625b9bd: Download complete
+2026-09-19T08:07:35.5373021Z 09923199ca0e: Verifying Checksum
+2026-09-19T08:07:35.5374845Z 09923199ca0e: Download complete
+2026-09-19T08:07:35.7109794Z 30447c4d35fd: Verifying Checksum
+2026-09-19T08:07:35.7159003Z 30447c4d35fd: Download complete
+2026-09-19T08:07:35.7460467Z 0fa3a4921cac: Download complete
+2026-09-19T08:07:36.0347740Z 51c22f27c833: Verifying Checksum
+2026-09-19T08:07:36.0349042Z 51c22f27c833: Download complete
+2026-09-19T08:07:36.1345433Z 268d5e11756b: Verifying Checksum
+2026-09-19T08:07:36.1346843Z 268d5e11756b: Download complete
+2026-09-19T08:07:36.4016801Z 701e6b9b3c7a: Download complete
+2026-09-19T08:07:36.4105929Z 2cba65371cbe: Download complete
+2026-09-19T08:07:36.6148645Z 4ded09a06161: Verifying Checksum
+2026-09-19T08:07:36.6150156Z 4ded09a06161: Download complete
+2026-09-19T08:07:36.6230840Z fba3baff8f44: Verifying Checksum
+2026-09-19T08:07:36.6231695Z fba3baff8f44: Download complete
+2026-09-19T08:07:36.6941501Z 6e3d575a999c: Verifying Checksum
+2026-09-19T08:07:36.6942039Z 6e3d575a999c: Download complete
+2026-09-19T08:07:38.1489790Z 09923199ca0e: Pull complete
+2026-09-19T08:07:41.1362433Z d9b985643753: Pull complete
+2026-09-19T08:07:42.0058960Z 54b65625b9bd: Pull complete
+2026-09-19T08:07:43.4099226Z 268d5e11756b: Pull complete
+2026-09-19T08:07:43.8851517Z 30447c4d35fd: Pull complete
+2026-09-19T08:07:43.8944945Z 0fa3a4921cac: Pull complete
+2026-09-19T08:07:47.8426336Z 2cba65371cbe: Pull complete
+2026-09-19T08:07:47.8767229Z 51c22f27c833: Pull complete
+2026-09-19T08:07:49.0250171Z 701e6b9b3c7a: Pull complete
+2026-09-19T08:07:55.2909609Z 6e3d575a999c: Pull complete
+2026-09-19T08:07:55.3017301Z 4ded09a06161: Pull complete
+2026-09-19T08:07:55.3117566Z fba3baff8f44: Pull complete
+2026-09-19T08:07:55.3147904Z Digest: sha256:654724e43dee252a187c541f3766329637f951fd576d69ba343a55063655d719
+2026-09-19T08:07:55.3157057Z Status: Downloaded newer image for w9jds/firebase-action:v15.30.2
+2026-09-19T08:07:55.3170715Z docker.io/w9jds/firebase-action:v15.30.2
+2026-09-19T08:07:55.3194326Z ##[endgroup]
+2026-09-19T08:07:55.3481428Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-19T08:07:55.3490198Z ##[group]Run actions/checkout@v4
+2026-09-19T08:07:55.3490669Z with:
+2026-09-19T08:07:55.3490916Z   repository: VitaliyGushenko/car-keeper
+2026-09-19T08:07:55.3493847Z   token: ***
+2026-09-19T08:07:55.3494071Z   ssh-strict: true
+2026-09-19T08:07:55.3494292Z   ssh-user: git
+2026-09-19T08:07:55.3494520Z   persist-credentials: true
+2026-09-19T08:07:55.3494773Z   clean: true
+2026-09-19T08:07:55.3495204Z   sparse-checkout-cone-mode: true
+2026-09-19T08:07:55.3495588Z   fetch-depth: 1
+2026-09-19T08:07:55.3496011Z   fetch-tags: false
+2026-09-19T08:07:55.3496238Z   show-progress: true
+2026-09-19T08:07:55.3496466Z   lfs: false
+2026-09-19T08:07:55.3496735Z   submodules: false
+2026-09-19T08:07:55.3496957Z   set-safe-directory: true
+2026-09-19T08:07:55.3497430Z   allow-unsafe-pr-checkout: false
+2026-09-19T08:07:55.3497907Z ##[endgroup]
+2026-09-19T08:07:55.4507752Z Syncing repository: VitaliyGushenko/car-keeper
+2026-09-19T08:07:55.4509757Z ##[group]Getting Git version info
+2026-09-19T08:07:55.4510460Z Working directory is '/home/runner/work/car-keeper/car-keeper'
+2026-09-19T08:07:55.4520381Z [command]/usr/bin/git version
+2026-09-19T08:07:55.4618451Z git version 2.55.0
+2026-09-19T08:07:55.4640199Z ##[endgroup]
+2026-09-19T08:07:55.4656299Z Temporarily overriding HOME='/home/runner/work/_temp/0ae2b5d3-b704-48d3-9436-e94de11495b8' before making global git config changes
+2026-09-19T08:07:55.4657817Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-19T08:07:55.4662379Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/car-keeper/car-keeper
+2026-09-19T08:07:55.4712011Z Deleting the contents of '/home/runner/work/car-keeper/car-keeper'
+2026-09-19T08:07:55.4716294Z ##[group]Initializing the repository
+2026-09-19T08:07:55.4721219Z [command]/usr/bin/git init /home/runner/work/car-keeper/car-keeper
+2026-09-19T08:07:55.4802324Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-09-19T08:07:55.4803859Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-09-19T08:07:55.4804937Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-09-19T08:07:55.4805793Z hint: call:
+2026-09-19T08:07:55.4806367Z hint:
+2026-09-19T08:07:55.4807017Z hint: 	git config --global init.defaultBranch <name>
+2026-09-19T08:07:55.4807948Z hint:
+2026-09-19T08:07:55.4808605Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-09-19T08:07:55.4809393Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-09-19T08:07:55.4810231Z hint:
+2026-09-19T08:07:55.4810681Z hint: 	git branch -m <name>
+2026-09-19T08:07:55.4811086Z hint:
+2026-09-19T08:07:55.4811553Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-09-19T08:07:55.4812330Z Initialized empty Git repository in /home/runner/work/car-keeper/car-keeper/.git/
+2026-09-19T08:07:55.4818485Z [command]/usr/bin/git remote add origin https://github.com/VitaliyGushenko/car-keeper
+2026-09-19T08:07:55.4862629Z ##[endgroup]
+2026-09-19T08:07:55.4863086Z ##[group]Disabling automatic garbage collection
+2026-09-19T08:07:55.4867632Z [command]/usr/bin/git config --local gc.auto 0
+2026-09-19T08:07:55.4901174Z ##[endgroup]
+2026-09-19T08:07:55.4901656Z ##[group]Setting up auth
+2026-09-19T08:07:55.4909437Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-19T08:07:55.4947570Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-19T08:07:55.5305565Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-19T08:07:55.5345896Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-19T08:07:55.5612808Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-19T08:07:55.5652841Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-19T08:07:55.5898110Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-09-19T08:07:55.5941520Z ##[endgroup]
+2026-09-19T08:07:55.5942279Z ##[group]Fetching the repository
+2026-09-19T08:07:55.5951682Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +58f54f1d50a69be27248cdd748082bf9b8fac840:refs/remotes/origin/main
+2026-09-19T08:07:56.1706565Z From https://github.com/VitaliyGushenko/car-keeper
+2026-09-19T08:07:56.1707703Z  * [new ref]         58f54f1d50a69be27248cdd748082bf9b8fac840 -> origin/main
+2026-09-19T08:07:56.1712855Z ##[endgroup]
+2026-09-19T08:07:56.1713452Z ##[group]Determining the checkout info
+2026-09-19T08:07:56.1716382Z ##[endgroup]
+2026-09-19T08:07:56.1724491Z [command]/usr/bin/git sparse-checkout disable
+2026-09-19T08:07:56.1782096Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-09-19T08:07:56.1825737Z ##[group]Checking out the ref
+2026-09-19T08:07:56.1826670Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-09-19T08:07:56.1983218Z Switched to a new branch 'main'
+2026-09-19T08:07:56.1991191Z branch 'main' set up to track 'origin/main'.
+2026-09-19T08:07:56.1993708Z ##[endgroup]
+2026-09-19T08:07:56.2044027Z [command]/usr/bin/git log -1 --format=%H
+2026-09-19T08:07:56.2075376Z 58f54f1d50a69be27248cdd748082bf9b8fac840
+2026-09-19T08:07:56.2432791Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-19T08:07:56.2435015Z ##[group]Run actions/setup-node@v4
+2026-09-19T08:07:56.2435277Z with:
+2026-09-19T08:07:56.2435493Z   node-version: 22
+2026-09-19T08:07:56.2435705Z   cache: npm
+2026-09-19T08:07:56.2435915Z   always-auth: false
+2026-09-19T08:07:56.2436137Z   check-latest: false
+2026-09-19T08:07:56.2439280Z   token: ***
+2026-09-19T08:07:56.2439500Z ##[endgroup]
+2026-09-19T08:07:56.3908704Z Found in cache @ /opt/hostedtoolcache/node/22.23.2/x64
+2026-09-19T08:07:56.3912587Z (node:2388) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-09-19T08:07:56.3913523Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-09-19T08:07:56.3915013Z ##[group]Environment details
+2026-09-19T08:07:58.7118586Z node: v22.23.2
+2026-09-19T08:07:58.7118999Z npm: 10.9.8
+2026-09-19T08:07:58.7119310Z yarn: 1.22.22
+2026-09-19T08:07:58.7120906Z ##[endgroup]
+2026-09-19T08:07:58.7199572Z [command]/opt/hostedtoolcache/node/22.23.2/x64/bin/npm config get cache
+2026-09-19T08:07:59.0825482Z /home/runner/.npm
+2026-09-19T08:07:59.2861406Z npm cache is not found
+2026-09-19T08:07:59.3006378Z ##[group]Run npm ci --ignore-scripts --no-audit --no-fund
+2026-09-19T08:07:59.3006878Z [36;1mnpm ci --ignore-scripts --no-audit --no-fund[0m
+2026-09-19T08:07:59.3059246Z shell: /usr/bin/bash -e {0}
+2026-09-19T08:07:59.3059527Z ##[endgroup]
+2026-09-19T08:08:02.2493954Z npm error code EUSAGE
+2026-09-19T08:08:02.2494494Z npm error
+2026-09-19T08:08:02.2496098Z npm error `npm ci` can only install packages when your package.json and package-lock.json or npm-shrinkwrap.json are in sync. Please update your lock file with `npm install` before continuing.
+2026-09-19T08:08:02.2497636Z npm error
+2026-09-19T08:08:02.2498227Z npm error Missing: @esbuild/aix-ppc64@0.25.12 from lock file
+2026-09-19T08:08:02.2498970Z npm error Missing: @esbuild/android-arm@0.25.12 from lock file
+2026-09-19T08:08:02.2499724Z npm error Missing: @esbuild/android-arm64@0.25.12 from lock file
+2026-09-19T08:08:02.2500524Z npm error Missing: @esbuild/android-x64@0.25.12 from lock file
+2026-09-19T08:08:02.2501358Z npm error Missing: @esbuild/darwin-arm64@0.25.12 from lock file
+2026-09-19T08:08:02.2502095Z npm error Missing: @esbuild/darwin-x64@0.25.12 from lock file
+2026-09-19T08:08:02.2502836Z npm error Missing: @esbuild/freebsd-arm64@0.25.12 from lock file
+2026-09-19T08:08:02.2503588Z npm error Missing: @esbuild/freebsd-x64@0.25.12 from lock file
+2026-09-19T08:08:02.2504303Z npm error Missing: @esbuild/linux-arm@0.25.12 from lock file
+2026-09-19T08:08:02.2505044Z npm error Missing: @esbuild/linux-arm64@0.25.12 from lock file
+2026-09-19T08:08:02.2505761Z npm error Missing: @esbuild/linux-ia32@0.25.12 from lock file
+2026-09-19T08:08:02.2506490Z npm error Missing: @esbuild/linux-loong64@0.25.12 from lock file
+2026-09-19T08:08:02.2507475Z npm error Missing: @esbuild/linux-mips64el@0.25.12 from lock file
+2026-09-19T08:08:02.2508232Z npm error Missing: @esbuild/linux-ppc64@0.25.12 from lock file
+2026-09-19T08:08:02.2508987Z npm error Missing: @esbuild/linux-riscv64@0.25.12 from lock file
+2026-09-19T08:08:02.2509728Z npm error Missing: @esbuild/linux-s390x@0.25.12 from lock file
+2026-09-19T08:08:02.2510514Z npm error Missing: @esbuild/linux-x64@0.25.12 from lock file
+2026-09-19T08:08:02.2511233Z npm error Missing: @esbuild/netbsd-arm64@0.25.12 from lock file
+2026-09-19T08:08:02.2511969Z npm error Missing: @esbuild/netbsd-x64@0.25.12 from lock file
+2026-09-19T08:08:02.2512715Z npm error Missing: @esbuild/openbsd-arm64@0.25.12 from lock file
+2026-09-19T08:08:02.2513465Z npm error Missing: @esbuild/openbsd-x64@0.25.12 from lock file
+2026-09-19T08:08:02.2514258Z npm error Missing: @esbuild/openharmony-arm64@0.25.12 from lock file
+2026-09-19T08:08:02.2515030Z npm error Missing: @esbuild/sunos-x64@0.25.12 from lock file
+2026-09-19T08:08:02.2515742Z npm error Missing: @esbuild/win32-arm64@0.25.12 from lock file
+2026-09-19T08:08:02.2516446Z npm error Missing: @esbuild/win32-ia32@0.25.12 from lock file
+2026-09-19T08:08:02.2517608Z npm error Missing: @esbuild/win32-x64@0.25.12 from lock file
+2026-09-19T08:08:02.2518104Z npm error
+2026-09-19T08:08:02.2518509Z npm error Clean install a project
+2026-09-19T08:08:02.2518894Z npm error
+2026-09-19T08:08:02.2519188Z npm error Usage:
+2026-09-19T08:08:02.2519514Z npm error npm ci
+2026-09-19T08:08:02.2519824Z npm error
+2026-09-19T08:08:02.2520153Z npm error Options:
+2026-09-19T08:08:02.2520888Z npm error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]
+2026-09-19T08:08:02.2521951Z npm error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]
+2026-09-19T08:08:02.2522993Z npm error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]
+2026-09-19T08:08:02.2524061Z npm error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]
+2026-09-19T08:08:02.2524874Z npm error [--no-bin-links] [--no-fund] [--dry-run]
+2026-09-19T08:08:02.2525701Z npm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]
+2026-09-19T08:08:02.2526877Z npm error [-ws|--workspaces] [--include-workspace-root] [--install-links]
+2026-09-19T08:08:02.2527640Z npm error
+2026-09-19T08:08:02.2528213Z npm error aliases: clean-install, ic, install-clean, isntall-clean
+2026-09-19T08:08:02.2528775Z npm error
+2026-09-19T08:08:02.2529190Z npm error Run "npm help ci" for more info
+2026-09-19T08:08:02.2530167Z npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-09-19T08_07_59_366Z-debug-0.log
+2026-09-19T08:08:02.2923450Z ##[error]Process completed with exit code 1.
+2026-09-19T08:08:02.3055446Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-09-19T08:08:02.3056614Z Post job cleanup.
+2026-09-19T08:08:02.3938399Z [command]/usr/bin/git version
+2026-09-19T08:08:02.3981704Z git version 2.55.0
+2026-09-19T08:08:02.4018171Z Temporarily overriding HOME='/home/runner/work/_temp/60e937f9-17fd-4dbb-90d7-5bfd5b847025' before making global git config changes
+2026-09-19T08:08:02.4019627Z Adding repository directory to the temporary git global config as a safe directory
+2026-09-19T08:08:02.4023820Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/car-keeper/car-keeper
+2026-09-19T08:08:02.4064698Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-09-19T08:08:02.4101017Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-09-19T08:08:02.4365577Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-09-19T08:08:02.4395211Z http.https://github.com/.extraheader
+2026-09-19T08:08:02.4408090Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-09-19T08:08:02.4444546Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-09-19T08:08:02.4788575Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-09-19T08:08:02.4848283Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-09-19T08:08:02.5341681Z Cleaning up orphan processes
+2026-09-19T08:08:02.5647999Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
