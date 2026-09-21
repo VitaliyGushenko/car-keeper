@@ -67,7 +67,7 @@
     @if (sorted().length === 0) {
       <ck-empty-state
         title="Расходов пока нет"
-        description="Добавляйте топливо, ремонт, страховку — приложение посчитает всё само. Подтверждённые ремонты попадают сюда автоматически."
+        description="Добавляйте ремонт, страховку, налоги — приложение посчитает всё само. Заправки и подтверждённые ремонты попадают сюда автоматически."
         icon="💰">
         <button type="button" ckButton="primary" action (click)="openAdd()">Добавить расход</button>
       </ck-empty-state>
@@ -118,19 +118,28 @@
 <ck-dialog [open]="dialogOpen()" [title]="editingId() ? 'Изменить расход' : 'Новый расход'"
            (closed)="dialogOpen.set(false)">
   <form (ngSubmit)="save()">
-    <label class="field">
+    <div class="field">
       <span class="field-label">Категория</span>
-      <select class="select" name="expType" [(ngModel)]="expType">
-        @for (key of typeKeys; track key) {
+      <select class="select" name="expType" [(ngModel)]="expType" [disabled]="editingFuelLinked()">
+        @for (key of manualTypeKeys; track key) {
           <option [value]="key">{{ typeLabels[key] }}</option>
         }
+        @if (editingFuelLinked()) {
+          <option value="fuel">{{ typeLabels['fuel'] }}</option>
+        }
       </select>
-    </label>
+      @if (editingFuelLinked()) {
+        <p class="faint">
+          Этот расход создан автоматически из вкладки «Заправки» — сумму и дату
+          меняйте там, расход обновится сам.
+        </p>
+      }
+    </div>
 
     <label class="field">
       <span class="field-label">Название</span>
       <input class="input" name="expTitle" [(ngModel)]="expTitle"
-             placeholder="Например, АИ-95, 40 л" />
+             placeholder="Например, Замена масла, шиномонтаж" />
     </label>
 
     <div class="grid-2">

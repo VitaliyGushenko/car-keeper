@@ -54,6 +54,8 @@ export class ExpensesTabComponent implements OnInit {
   readonly typeLabels = EXPENSE_TYPE_LABELS;
   readonly typeTones = TYPE_TONES;
   readonly typeKeys = Object.keys(EXPENSE_TYPE_LABELS) as ExpenseType[];
+  /** «Топливо» недоступно для ручного ввода: заправки создают расход сами. */
+  readonly manualTypeKeys = this.typeKeys.filter((type) => type !== 'fuel');
   readonly formatMoney = formatMoney;
   readonly formatDate = formatDate;
   readonly formatNumber = formatNumber;
@@ -75,7 +77,9 @@ export class ExpensesTabComponent implements OnInit {
   readonly editingId = signal<string | null>(null);
   /** Редактируемый расход — чтобы не потерять связь с ремонтом/регламентом при сохранении. */
   private editingExpense: Expense | null = null;
-  expType: ExpenseType = 'fuel';
+  /** Расход, созданный автоматически из вкладки «Заправки», — категорию ему менять нельзя. */
+  readonly editingFuelLinked = signal(false);
+  expType: ExpenseType = 'maintenance';
   expTitle = '';
   expAmount: number | null = null;
   expDate = '';
@@ -151,7 +155,8 @@ export class ExpensesTabComponent implements OnInit {
   openAdd(): void {
     this.editingId.set(null);
     this.editingExpense = null;
-    this.expType = 'fuel';
+    this.editingFuelLinked.set(false);
+    this.expType = 'maintenance';
     this.expTitle = '';
     this.expAmount = null;
     this.expDate = toDateInputValue(new Date());
@@ -165,6 +170,7 @@ export class ExpensesTabComponent implements OnInit {
   openEdit(expense: Expense): void {
     this.editingId.set(expense.id);
     this.editingExpense = expense;
+    this.editingFuelLinked.set(expense.type === 'fuel');
     this.expType = expense.type;
     this.expTitle = expense.title ?? '';
     this.expAmount = expense.amount;
