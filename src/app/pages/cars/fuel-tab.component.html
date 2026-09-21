@@ -90,33 +90,42 @@
     </div>
     <div class="grid-2">
       <label class="field">
-        <span class="field-label">Литры *</span>
-        <input class="input" type="number" name="fuelLiters" [(ngModel)]="fuelLiters"
-               min="0" step="0.01" required (input)="onAmountInput()" />
+        <span class="field-label">Сумма, {{ currency() }} *</span>
+        <input class="input" type="number" name="fuelTotal" [(ngModel)]="fuelTotal"
+               min="0" step="0.01" (input)="onSumInput()" />
       </label>
       <label class="field">
         <span class="field-label">Цена за литр</span>
         <input class="input" type="number" name="fuelPrice" [(ngModel)]="fuelPrice"
-               min="0" step="0.01" (input)="onAmountInput()" />
+               min="0" step="0.01" (input)="onPriceInput()" />
       </label>
     </div>
     <div class="grid-2">
       <label class="field">
-        <span class="field-label">Сумма, {{ currency() }}</span>
-        <input class="input" type="number" name="fuelTotal" [(ngModel)]="fuelTotal" min="0" step="0.01" />
+        <span class="field-label">Литры (расчёт)</span>
+        <input class="input" type="number" name="fuelLiters" [(ngModel)]="fuelLiters"
+               min="0" step="0.01" (input)="onLitersInput()" />
       </label>
       <label class="field">
         <span class="field-label">Заправка / АЗС</span>
         <input class="input" name="fuelStation" [(ngModel)]="fuelStation" placeholder="Газпромнефть" />
       </label>
     </div>
+    <p class="faint form-hint">
+      Литры считаются из суммы и цены. Знаете точный объём из чека? Впишите литры
+      вручную — сумма пересчитается.
+    </p>
     <label class="check-row">
       <input type="checkbox" name="fuelFullTank" [(ngModel)]="fuelFullTank" />
-      <span>Бак залит до полного — включить в расчёт расхода</span>
+      <span>Заправлен полный бак — закрывает период расчёта расхода</span>
     </label>
+    <p class="faint form-hint">
+      Расход считается от одной полной заправки до следующей. Частичные дозаливы
+      (без галочки) войдут в следующий полный бак.
+    </p>
     <div class="dialog-actions">
       <button type="button" ckButton (click)="dialogOpen.set(false)">Отмена</button>
-      <button type="submit" ckButton="primary" [disabled]="busy()">Сохранить</button>
+      <button type="submit" ckButton="primary" [disabled]="!canSave()">Сохранить</button>
     </div>
   </form>
 </ck-dialog>

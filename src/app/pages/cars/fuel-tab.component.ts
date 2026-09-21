@@ -90,24 +90,56 @@ export class FuelTabComponent implements OnInit {
     this.dialogOpen.set(true);
   }
 
-  onAmountInput(): void {
-    if (this.fuelLiters !== null && this.fuelPrice !== null) {
+  /** Сумма известна первой — литры считаются из суммы и цены за литр. */
+  onSumInput(): void {
+    if (this.fuelTotal !== null && this.fuelPrice !== null && this.fuelPrice > 0) {
+      this.fuelLiters = Math.round((this.fuelTotal / this.fuelPrice) * 100) / 100;
+    }
+  }
+
+  /** Цена правится после суммы — литры пересчитываются; без суммы пересчитываем сумму из литров. */
+  onPriceInput(): void {
+    if (this.fuelPrice === null || this.fuelPrice <= 0) {
+      return;
+    }
+    if (this.fuelTotal !== null && this.fuelTotal > 0) {
+      this.fuelLiters = Math.round((this.fuelTotal / this.fuelPrice) * 100) / 100;
+    } else if (this.fuelLiters !== null && this.fuelLiters > 0) {
       this.fuelTotal = Math.round(this.fuelLiters * this.fuelPrice * 100) / 100;
     }
   }
 
+  /** Литры вписаны вручную (например, из чека) — сумма пересчитывается. */
+  onLitersInput(): void {
+    if (this.fuelLiters !== null && this.fuelPrice !== null && this.fuelPrice > 0) {
+      this.fuelTotal = Math.round(this.fuelLiters * this.fuelPrice * 100) / 100;
+    }
+  }
+
+  canSave(): boolean {
+    return (
+      !this.busy() &&
+      this.fuelOdometer !== null &&
+      this.fuelLiters !== null && this.fuelLiters > 0 &&
+      this.fuelTotal !== null && this.fuelTotal > 0
+    );
+  }
+
   async save(): Promise<void> {
-    if (this.busy() || this.fuelLiters === null || this.fuelLiters <= 0 || this.fuelOdometer === null) {
+    const odometer = this.fuelOdometer;
+    const liters = this.fuelLiters;
+    const total = this.fuelTotal;
+    if (this.busy() || odometer === null || liters === null || liters <= 0 || total === null || total <= 0) {
       return;
     }
     this.busy.set(true);
     try {
       const draft = {
         date: dateInputToTimestamp(this.fuelDate),
-        odometerKm: this.fuelOdometer,
-        liters: this.fuelLiters,
+        odometerKm: odometer,
+        liters,
         pricePerLiter: this.fuelPrice,
-        totalCost: this.fuelTotal ?? 0,
+        totalCost: total,
         fullTank: this.fuelFullTank,
         gasStation: this.fuelStation.trim() || undefined,
       };
