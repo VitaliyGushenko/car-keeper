@@ -5,8 +5,8 @@
   <title>CarKeeper</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <!-- Единственный кандидат: Chrome при двух link может предпочесть старый .ico из кэша. ?v= сбрасывает кэш при обновлении иконки. -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
   <script>
     // Тема применяется до загрузки приложения, чтобы не было «вспышки».
     try {
