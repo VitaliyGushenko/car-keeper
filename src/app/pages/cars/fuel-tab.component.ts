@@ -47,7 +47,6 @@ export class FuelTabComponent implements OnInit {
   fuelPrice: number | null = null;
   fuelTotal: number | null = null;
   fuelFullTank = true;
-  fuelStation = '';
 
   readonly removeConfirm = signal<FuelEntry | null>(null);
 
@@ -74,7 +73,6 @@ export class FuelTabComponent implements OnInit {
     this.fuelPrice = null;
     this.fuelTotal = null;
     this.fuelFullTank = true;
-    this.fuelStation = '';
     this.dialogOpen.set(true);
   }
 
@@ -86,7 +84,6 @@ export class FuelTabComponent implements OnInit {
     this.fuelPrice = entry.pricePerLiter ?? null;
     this.fuelTotal = entry.totalCost;
     this.fuelFullTank = entry.fullTank;
-    this.fuelStation = entry.gasStation ?? '';
     this.dialogOpen.set(true);
   }
 
@@ -141,7 +138,6 @@ export class FuelTabComponent implements OnInit {
         pricePerLiter: this.fuelPrice,
         totalCost: total,
         fullTank: this.fuelFullTank,
-        gasStation: this.fuelStation.trim() || undefined,
       };
       const editing = this.editingId();
       if (editing) {

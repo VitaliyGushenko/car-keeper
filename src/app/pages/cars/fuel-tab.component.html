@@ -100,17 +100,11 @@
                min="0" step="0.01" (input)="onPriceInput()" />
       </label>
     </div>
-    <div class="grid-2">
-      <label class="field">
-        <span class="field-label">Литры (расчёт)</span>
-        <input class="input" type="number" name="fuelLiters" [(ngModel)]="fuelLiters"
-               min="0" step="0.01" (input)="onLitersInput()" />
-      </label>
-      <label class="field">
-        <span class="field-label">Заправка / АЗС</span>
-        <input class="input" name="fuelStation" [(ngModel)]="fuelStation" placeholder="Газпромнефть" />
-      </label>
-    </div>
+    <label class="field">
+      <span class="field-label">Литры (расчёт)</span>
+      <input class="input" type="number" name="fuelLiters" [(ngModel)]="fuelLiters"
+             min="0" step="0.01" (input)="onLitersInput()" />
+    </label>
     <p class="faint form-hint">
       Литры считаются из суммы и цены. Знаете точный объём из чека? Впишите литры
       вручную — сумма пересчитается.
