@@ -121,7 +121,7 @@ export type RepairDraft = Omit<
   'id' | 'faultId' | 'status' | 'actualCost' | 'actualDate' | 'createdAt'
 >;
 
-export type ExpenseType = 'fuel' | 'maintenance' | 'repair' | 'insurance' | 'tax' | 'other';
+export type ExpenseType = 'fuel' | 'maintenance' | 'repair' | 'insurance' | 'tax' | 'wash' | 'other';
 
 /** Расход: cars/{carId}/expenses/{id}. */
 export interface Expense {

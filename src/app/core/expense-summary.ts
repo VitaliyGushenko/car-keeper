@@ -7,6 +7,7 @@ export const EXPENSE_TYPE_LABELS: Record<ExpenseType, string> = {
   repair: 'Ремонт',
   insurance: 'Страховка',
   tax: 'Налоги и сборы',
+  wash: 'Мойка',
   other: 'Прочее',
 };
 

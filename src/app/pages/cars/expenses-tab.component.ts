@@ -22,6 +22,7 @@ const TYPE_TONES: Record<ExpenseType, UiBadgeTone> = {
   repair: 'danger',
   insurance: 'ok',
   tax: 'muted',
+  wash: 'info',
   other: 'muted',
 };
 
